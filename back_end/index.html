@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="fr">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Goûts du Bénin | Administration</title>
+
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#198754" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <!--end::Fonts-->
+
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+    <style>
+      #api-loader {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.7);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <!-- Spinner loader pour les requêtes AJAX -->
+    <div id="api-loader">
+      <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body shadow-sm">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+              <span class="navbar-text fw-bold text-success ps-2">Tableau de bord Administration</span>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!-- Profil Utilisateur dans le Header -->
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img
+                  src="./assets/img/user2-160x160.jpg"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="header-user-name">Admin</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!-- User Image -->
+                <li class="user-header text-bg-success">
+                  <img
+                    src="./assets/img/user2-160x160.jpg"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Administrateur
+                    <small>Goûts du Bénin</small>
+                  </p>
+                </li>
+                <!-- Menu Footer-->
+                <li class="user-footer border-top border-secondary">
+                  <a href="#" onclick="logout(); return false;" class="btn btn-danger btn-flat float-end">Déconnexion</a>
+                </li>
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+
+      <!-- Placeholder pour la barre latérale dynamique -->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" id="app-sidebar-placeholder"></aside>
+
+      <!--begin::App Main Content-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0 text-success fw-bold">Dashboard</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Accueil</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!-- Zone des alertes -->
+            <div id="alert-container"></div>
+
+            <!--begin::Row Widgets-->
+            <div class="row mt-3">
+              <!-- Widget 1: Recettes en attente -->
+              <div class="col-lg-4 col-6">
+                <div class="small-box text-bg-warning shadow">
+                  <div class="inner">
+                    <h3 id="count-pending-recipes">-</h3>
+                    <p class="fw-bold">Recettes en attente</p>
+                  </div>
+                  <div class="small-box-icon">
+                     <i class="bi bi-journal-check" style="font-size: 4rem; opacity: 0.15;"></i>
+                  </div>
+                  <a
+                    href="./recettes.html?statut=en_attente"
+                    class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Voir la liste <i class="bi bi-arrow-right-circle"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Widget 1-->
+
+              <!-- Widget 2: Commentaires en attente -->
+              <div class="col-lg-4 col-6">
+                <div class="small-box text-bg-info text-white shadow">
+                  <div class="inner">
+                    <h3 id="count-pending-comments">-</h3>
+                    <p class="fw-bold">Commentaires en attente</p>
+                  </div>
+                  <div class="small-box-icon">
+                     <i class="bi bi-chat-dots" style="font-size: 4rem; opacity: 0.15;"></i>
+                  </div>
+                  <a
+                    href="./commentaires.html"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Modérer <i class="bi bi-arrow-right-circle"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Widget 2-->
+
+              <!-- Widget 3: Catégories -->
+              <div class="col-lg-4 col-12">
+                <div class="small-box text-bg-success shadow">
+                  <div class="inner">
+                    <h3 id="count-categories">-</h3>
+                    <p class="fw-bold">Catégories existantes</p>
+                  </div>
+                  <div class="small-box-icon">
+                     <i class="bi bi-tags" style="font-size: 4rem; opacity: 0.15;"></i>
+                  </div>
+                  <a
+                    href="./recettes.html"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Gérer les recettes <i class="bi bi-arrow-right-circle"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Widget 3-->
+            </div>
+            <!--end::Row Widgets-->
+
+            <!-- Row Tableaux -->
+            <div class="row mt-4">
+              <!-- Top recettes -->
+              <div class="col-md-7">
+                <div class="card card-success card-outline shadow">
+                  <div class="card-header">
+                    <h5 class="card-title fw-bold text-success mb-0"><i class="bi bi-award-fill me-2"></i>Recettes populaires</h5>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th style="width: 50px">Rang</th>
+                            <th>Recette</th>
+                            <th>Note Moyenne</th>
+                            <th>Nombre de votes</th>
+                          </tr>
+                        </thead>
+                        <tbody id="top-recipes-table-body">
+                          <tr>
+                            <td colspan="4" class="text-center text-muted">Chargement en cours...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Raccourcis Actions -->
+              <div class="col-md-5">
+                <div class="card card-success shadow">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-lightning-charge-fill me-2"></i>Actions rapides</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted">Utilisez ces raccourcis pour gérer les contenus du blog.</p>
+                    <div class="d-grid gap-3">
+                      <a href="./recette-form.html" class="btn btn-outline-success text-start py-2">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Créer une nouvelle recette
+                      </a>
+                      <a href="./recettes.html" class="btn btn-outline-success text-start py-2">
+                        <i class="bi bi-journal-text me-2"></i> Gérer toutes les recettes
+                      </a>
+                      <a href="./commentaires.html" class="btn btn-outline-success text-start py-2">
+                        <i class="bi bi-chat-left-text-fill me-2"></i> Modérer les commentaires en attente
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end::Row Tableaux -->
+
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main Content-->
+
+      <!--begin::Footer-->
+      <footer class="app-footer text-center">
+        <strong>Copyright &copy; 2026 <a href="#" class="text-success text-decoration-none">Goûts du Bénin</a>.</strong> Tous droits réservés.
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+    <script src="./js/adminlte.js"></script>
+    <!--end::Required Plugin(AdminLTE)-->
+
+    <!-- Scripts de l'application -->
+    <script src="./js/app-auth.js"></script>
+    <script src="./js/sidebar.js"></script>
+    <script src="./js/app-dashboard.js"></script>
+  </body>
+  <!--end::Body-->
+</html>

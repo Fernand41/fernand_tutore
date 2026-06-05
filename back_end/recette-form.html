@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Goûts du Bénin | Formulaire Recette</title>
+
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#198754" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <!--end::Fonts-->
+
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+    <style>
+      #api-loader {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.7);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <!-- Spinner loader pour les requêtes AJAX -->
+    <div id="api-loader">
+      <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body shadow-sm">
+        <div class="container-fluid">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+              <span class="navbar-text fw-bold text-success ps-2">Formulaire de Recette</span>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img src="./assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User" />
+                <span class="d-none d-md-inline header-user-name">Admin</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <li class="user-header text-bg-success">
+                  <img src="./assets/img/user2-160x160.jpg" class="rounded-circle shadow" alt="User" />
+                  <p>Administrateur <small>Goûts du Bénin</small></p>
+                </li>
+                <li class="user-footer border-top border-secondary">
+                  <a href="#" onclick="logout(); return false;" class="btn btn-danger btn-flat float-end">Déconnexion</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!--end::Header-->
+
+      <!-- Placeholder pour la barre latérale dynamique -->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" id="app-sidebar-placeholder"></aside>
+
+      <!--begin::App Main Content-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0 text-success fw-bold" id="form-page-title">Créer une Recette</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Accueil</a></li>
+                  <li class="breadcrumb-item"><a href="./recettes.html">Recettes</a></li>
+                  <li class="breadcrumb-item active" id="breadcrumb-current-page" aria-current="page">Créer</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+            <!-- Zone des alertes -->
+            <div id="alert-container"></div>
+
+            <div class="card card-success card-outline shadow mb-4">
+              <div class="card-header">
+                <h5 class="card-title fw-bold text-success mb-0"><i class="bi bi-journal-plus me-2"></i>Informations de la recette</h5>
+              </div>
+              <form id="recetteForm" enctype="multipart/form-data">
+                <div class="card-body">
+                  <div class="row g-3">
+                    <!-- Titre -->
+                    <div class="col-md-8">
+                      <label for="recette-title" class="form-label fw-bold">Titre de la recette <span class="text-danger">*</span></label>
+                      <input type="text" id="recette-title" class="form-control" placeholder="Ex: Sauce Gombo Traditionnelle" required />
+                    </div>
+
+                    <!-- Catégorie -->
+                    <div class="col-md-4">
+                      <label for="recette-category" class="form-label fw-bold">Catégorie <span class="text-danger">*</span></label>
+                      <select id="recette-category" class="form-select" required>
+                        <option value="">Chargement...</option>
+                      </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12">
+                      <label for="recette-description" class="form-label fw-bold">Description courte <span class="text-danger">*</span></label>
+                      <textarea id="recette-description" class="form-control" rows="2" placeholder="Une brève introduction ou histoire de la recette..." required></textarea>
+                    </div>
+
+                    <!-- Ingrédients -->
+                    <div class="col-md-6">
+                      <label for="recette-ingredients" class="form-label fw-bold">Ingrédients <span class="text-danger">*</span></label>
+                      <textarea id="recette-ingredients" class="form-control" rows="6" placeholder="Spécifier les ingrédients (ex: 200g de gombo, 1 oignon...)" required></textarea>
+                    </div>
+
+                    <!-- Étapes -->
+                    <div class="col-md-6">
+                      <label for="recette-etapes" class="form-label fw-bold">Étapes de préparation <span class="text-danger">*</span></label>
+                      <textarea id="recette-etapes" class="form-control" rows="6" placeholder="Écrire les étapes de préparation dans l'ordre de réalisation..." required></textarea>
+                    </div>
+
+                    <!-- Difficulté -->
+                    <div class="col-md-3">
+                      <label for="recette-difficulty" class="form-label fw-bold">Difficulté</label>
+                      <select id="recette-difficulty" class="form-select">
+                        <option value="facile">Facile</option>
+                        <option value="moyen" selected>Moyen</option>
+                        <option value="difficile">Difficile</option>
+                      </select>
+                    </div>
+
+                    <!-- Temps de préparation -->
+                    <div class="col-md-3">
+                      <label for="recette-prep" class="form-label fw-bold">Temps de préparation (min)</label>
+                      <input type="number" id="recette-prep" class="form-control" min="0" value="0" />
+                    </div>
+
+                    <!-- Temps de cuisson -->
+                    <div class="col-md-3">
+                      <label for="recette-cuisson" class="form-label fw-bold">Temps de cuisson (min)</label>
+                      <input type="number" id="recette-cuisson" class="form-control" min="0" value="0" />
+                    </div>
+
+                    <!-- Portions / Personnes -->
+                    <div class="col-md-3">
+                      <label for="recette-portions" class="form-label fw-bold">Nombre de personnes</label>
+                      <input type="number" id="recette-portions" class="form-control" min="0" value="0" />
+                    </div>
+
+                    <!-- Image -->
+                    <div class="col-md-6">
+                      <label for="recette-image" class="form-label fw-bold">Image de la recette (JPEG, PNG, WEBP)</label>
+                      <input type="file" id="recette-image" class="form-control" accept="image/jpeg,image/png,image/webp" />
+                      <div id="image-preview-container"></div>
+                    </div>
+
+                    <!-- Lien Vidéo YouTube -->
+                    <div class="col-md-6">
+                      <label for="recette-video" class="form-label fw-bold">Lien vidéo YouTube (Optionnel)</label>
+                      <input type="url" id="recette-video" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer bg-white border-top">
+                  <div class="d-flex justify-content-end gap-2">
+                    <a href="./recettes.html" class="btn btn-outline-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-2"></i>Enregistrer la recette</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main Content-->
+
+      <footer class="app-footer text-center">
+        <strong>Copyright &copy; 2026 <a href="#" class="text-success text-decoration-none">Goûts du Bénin</a>.</strong> Tous droits réservés.
+      </footer>
+    </div>
+    <!--end::App Wrapper-->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/adminlte.js"></script>
+
+    <!-- Scripts de l'application -->
+    <script src="./js/app-auth.js"></script>
+    <script src="./js/sidebar.js"></script>
+    <script src="./js/app-recettes.js"></script>
+  </body>
+</html>
