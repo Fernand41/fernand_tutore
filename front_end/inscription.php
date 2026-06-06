@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/../includes/session.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
    <head>
@@ -118,8 +121,10 @@
          </div>
          
          <div id="alert-container"></div>
+         <?php displayFlash(); ?>
 
-         <form id="registerForm" novalidate>
+         <form id="registerForm" action="../actions/auth_register.php" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <div class="mb-3">
                <label class="flbl">Pseudo / Nom d'utilisateur *</label>
                <input type="text" id="registerPseudo" class="form-control fctrl" placeholder="Ex: Koffi97" required />
@@ -148,82 +153,5 @@
          </form>
       </div>
 
-      <!-- Scripts JS -->
-      <script src="js/jquery-3.7.1.min.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      
-      <script>
-         // Rediriger vers l'accueil si déjà connecté
-         if (localStorage.getItem('jwt_token')) {
-             window.location.href = 'index.php';
-         }
-
-         document.getElementById('registerForm').addEventListener('submit', async (e) => {
-             e.preventDefault();
-             const form = e.target;
-             const pseudoInput = document.getElementById('registerPseudo');
-             const emailInput = document.getElementById('registerEmail');
-             const passwordInput = document.getElementById('registerPassword');
-             const alertContainer = document.getElementById('alert-container');
-             
-             // Réinitialiser les validations
-             form.classList.remove('was-validated');
-             pseudoInput.classList.remove('is-invalid');
-             emailInput.classList.remove('is-invalid');
-             passwordInput.classList.remove('is-invalid');
-             alertContainer.innerHTML = '';
-
-             let isValid = true;
-
-             if (!pseudoInput.value.trim()) {
-                 pseudoInput.classList.add('is-invalid');
-                 isValid = false;
-             }
-
-             if (!emailInput.value.trim() || !emailInput.value.includes('@')) {
-                 emailInput.classList.add('is-invalid');
-                 isValid = false;
-             }
-
-             if (!passwordInput.value || passwordInput.value.length < 6) {
-                 passwordInput.classList.add('is-invalid');
-                 isValid = false;
-             }
-
-             if (!isValid) return;
-
-             try {
-                 // Requête d'inscription via apiRequest
-                 // Le backend attend 'nom', 'email', 'mot_de_passe'
-                 await apiRequest('POST', '/auth/inscription', {
-                     nom: pseudoInput.value.trim(),
-                     email: emailInput.value.trim(),
-                     mot_de_passe: passwordInput.value
-                 });
-
-                 // Succès de l'inscription
-                 alertContainer.innerHTML = `
-                     <div class="alert alert-success p-3 d-flex align-items-center gap-2 mb-3">
-                         <i class="fas fa-check-circle text-success"></i>
-                         <div>Inscription réussie ! Redirection vers la page de connexion...</div>
-                     </div>
-                 `;
-
-                 // Rediriger après 2 secondes vers login.php
-                 setTimeout(() => {
-                     window.location.href = 'login.php';
-                 }, 2000);
-
-             } catch (error) {
-                 alertContainer.innerHTML = `
-                     <div class="alert p-3 d-flex align-items-center gap-2 mb-3">
-                         <i class="fas fa-exclamation-circle text-danger"></i>
-                         <div>${error.message || "Erreur lors de l'inscription."}</div>
-                     </div>
-                 `;
-             }
-         });
-      </script>
    </body>
 </html>

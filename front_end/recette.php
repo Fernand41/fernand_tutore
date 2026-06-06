@@ -1,3 +1,43 @@
+<?php
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/session.php';
+$pdo = Database::getInstance();
+
+$slug = trim($_GET['slug'] ?? '');
+$id   = isset($_GET['id']) ? (int) $_GET['id'] : null;
+if ($slug === '' && $id === null) {
+    header('Location: recettes.php');
+    exit;
+}
+
+$sql = 'SELECT r.*, c.nom AS categorie, c.slug AS categorie_slug
+        FROM recettes r
+        JOIN categories_recettes c ON r.id_categorie = c.id
+        WHERE r.statut = "publie"';
+$params = [];
+if ($id !== null && $id > 0) {
+    $sql .= ' AND r.id = ?';
+    $params[] = $id;
+} else {
+    $sql .= ' AND r.slug = ?';
+    $params[] = $slug;
+}
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$recipe = $stmt->fetch();
+if (!$recipe) {
+    header('Location: recettes.php');
+    exit;
+}
+
+function parseList(string $text): array {
+    return array_filter(array_map('trim', preg_split('/[\r\n]+/', $text)), fn($item) => $item !== '');
+}
+
+$ingredients = parseList($recipe['ingredients'] ?? '');
+$steps = parseList($recipe['etapes'] ?? '');
+$recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg';
+?>
 <!DOCTYPE html>
 <html lang="fr">
    <head>
@@ -390,53 +430,53 @@
       </div>
 
       <!-- ============================================================
-         RECIPE DETAIL HEADER (DYNAMIC HERO)
+         RECIPE DETAIL HEADER
          ============================================================ -->
       <section class="recipe-header">
-         <div class="recipe-header-bg" id="headerBgImage" style="background-image: url('img/menu/1.jpg');"></div>
+         <div class="recipe-header-bg" id="headerBgImage" style="background-image: url('<?= e($recipeImage) ?>');"></div>
          <div class="container">
             <div class="row align-items-center g-5">
                <div class="col-lg-7" data-aos="fade-right">
                   <div class="mb-3">
-                     <span class="badge bg-danger px-3 py-2 text-uppercase mb-2" id="recipeCategoryName" style="letter-spacing: 1px;">Catégorie</span>
-                     <span class="badge bg-secondary px-3 py-2 text-uppercase mb-2 ms-2" id="recipeDifficultyName">Difficulté</span>
+                     <span class="badge bg-danger px-3 py-2 text-uppercase mb-2" style="letter-spacing: 1px;"><?= e($recipe['categorie']) ?></span>
+                     <span class="badge bg-secondary px-3 py-2 text-uppercase mb-2 ms-2"><?= e(ucfirst($recipe['difficulte'] ?? '')) ?></span>
                   </div>
-                  <h1 class="display-4 fw-bold mb-3 text-white" id="recipeTitle">Chargement...</h1>
-                  <p class="lead text-white-50 mb-4" id="recipeDescription">...</p>
+                  <h1 class="display-4 fw-bold mb-3 text-white"><?= e($recipe['titre']) ?></h1>
+                  <p class="lead text-white-50 mb-4"><?= nl2br(e($recipe['description'])) ?></p>
                   
-                  <div class="row g-3" id="metaContainer">
+                  <div class="row g-3">
                      <div class="col-6 col-sm-3">
                         <div class="meta-item">
                            <i class="far fa-clock"></i>
                            <span>Préparation</span>
-                           <strong id="recipePrepTime">-- min</strong>
+                           <strong><?= (int) ($recipe['temps_prep'] ?? 0) ?> min</strong>
                         </div>
                      </div>
                      <div class="col-6 col-sm-3">
                         <div class="meta-item">
                            <i class="fas fa-fire"></i>
                            <span>Cuisson</span>
-                           <strong id="recipeCookTime">-- min</strong>
+                           <strong><?= (int) ($recipe['temps_cuisson'] ?? 0) ?> min</strong>
                         </div>
                      </div>
                      <div class="col-6 col-sm-3">
                         <div class="meta-item">
                            <i class="fas fa-users"></i>
                            <span>Portions</span>
-                           <strong id="recipePortions">-- pers.</strong>
+                           <strong><?= (int) ($recipe['nb_personnes'] ?? 0) ?> pers.</strong>
                         </div>
                      </div>
                      <div class="col-6 col-sm-3">
                         <div class="meta-item">
                            <i class="fas fa-star text-warning"></i>
                            <span>Note</span>
-                           <strong id="recipeRating">-- / 5</strong>
+                           <strong><?= round((float) ($recipe['note_moyenne'] ?? 0), 1) ?> / 5</strong>
                         </div>
                      </div>
                   </div>
                </div>
                <div class="col-lg-5" data-aos="fade-left">
-                  <img src="img/menu/1.jpg" id="recipeImage" onerror="this.src='img/menu/1.jpg'" class="recipe-main-img" alt="Recette"/>
+                  <img src="<?= e($recipeImage) ?>" class="recipe-main-img" alt="<?= e($recipe['titre']) ?>"/>
                </div>
             </div>
          </div>
@@ -455,7 +495,13 @@
                      <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="fas fa-utensils text-danger me-2"></i>Ingrédients</h3>
                      <p class="text-muted mb-4" style="font-size: 0.9rem;"><i class="fas fa-info-circle me-1"></i> Astuce : vous pouvez cocher les ingrédients que vous avez déjà réunis.</p>
                      <ul class="ingredients-list" id="ingredientsList">
-                        <!-- Injecté dynamiquement -->
+                        <?php if (!empty($ingredients)): ?>
+                           <?php foreach ($ingredients as $ingredient): ?>
+                              <li><?= e($ingredient) ?></li>
+                           <?php endforeach; ?>
+                        <?php else: ?>
+                           <li>Aucun ingrédient renseigné pour cette recette.</li>
+                        <?php endif; ?>
                      </ul>
                   </div>
 
@@ -463,7 +509,19 @@
                   <div class="section-card">
                      <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="fas fa-list-ol text-danger me-2"></i>Étapes de préparation</h3>
                      <div id="stepsContainer">
-                        <!-- Injecté dynamiquement -->
+                        <?php if (!empty($steps)): ?>
+                           <?php foreach ($steps as $index => $step): ?>
+                              <div class="step-item">
+                                 <div class="step-number"><?= $index + 1 ?></div>
+                                 <div class="step-content">
+                                    <h5>Étape <?= $index + 1 ?></h5>
+                                    <p><?= e($step) ?></p>
+                                 </div>
+                              </div>
+                           <?php endforeach; ?>
+                        <?php else: ?>
+                           <p class="text-muted">Aucune étape de préparation disponible.</p>
+                        <?php endif; ?>
                      </div>
                   </div>
 
@@ -636,8 +694,5 @@
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      <script src="js/recette.js"></script>
    </body>
 </html>

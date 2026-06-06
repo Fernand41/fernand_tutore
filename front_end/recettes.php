@@ -1,3 +1,24 @@
+<?php
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/session.php';
+$pdo = Database::getInstance();
+
+$selectedCategory = trim($_GET['categorie'] ?? '');
+$params = [];
+$sql = 'SELECT r.id, r.slug, r.titre, r.description, r.image, r.nb_personnes, r.temps_prep, r.temps_cuisson, r.difficulte, c.nom AS categorie, c.slug AS categorie_slug
+        FROM recettes r
+        JOIN categories_recettes c ON r.id_categorie = c.id
+        WHERE r.statut = "publie"';
+if ($selectedCategory !== '' && $selectedCategory !== 'all') {
+    $sql .= ' AND c.slug = ?';
+    $params[] = $selectedCategory;
+}
+$sql .= ' ORDER BY r.date_publication DESC, r.date_creation DESC';
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$recettes = $stmt->fetchAll();
+$categories = $pdo->query('SELECT nom, slug FROM categories_recettes ORDER BY nom')->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -151,9 +172,11 @@
                </div>
                <div class="col-md-4">
                   <label class="text-white mb-2 small" style="font-weight: 500;"><i class="fas fa-filter me-1 text-danger"></i> Catégorie</label>
-                  <select id="recipesCategorySelect" class="fctrl">
-                     <option value="all">Toutes les catégories</option>
-                     <!-- Catégories injectées dynamiquement -->
+                  <select id="recipesCategorySelect" name="categorie" class="fctrl">
+                     <option value="all"<?= $selectedCategory === 'all' ? ' selected' : '' ?>>Toutes les catégories</option>
+                     <?php foreach ($categories as $categorie): ?>
+                        <option value="<?= e($categorie['slug']) ?>"<?= $selectedCategory === $categorie['slug'] ? ' selected' : '' ?>><?= e($categorie['nom']) ?></option>
+                     <?php endforeach; ?>
                   </select>
                </div>
                <div class="col-md-4">
@@ -169,7 +192,26 @@
 
             <!-- Recipes Grid -->
             <div class="row g-4" id="mgrid">
-               <!-- Les recettes seront injectées ici par recettes.js -->
+               <?php if (!empty($recettes)): ?>
+                  <?php foreach ($recettes as $recette): ?>
+                     <?php $recipeImage = $recette['image'] ? 'uploads/recettes/' . $recette['image'] : 'img/menu/1.jpg'; ?>
+                     <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0">
+                           <img src="<?= e($recipeImage) ?>" class="card-img-top" alt="<?= e($recette['titre']) ?>" style="height:220px;object-fit:cover;"/>
+                           <div class="card-body d-flex flex-column">
+                              <span class="badge bg-danger mb-2"><?= e($recette['categorie']) ?></span>
+                              <h5 class="card-title"><?= e($recette['titre']) ?></h5>
+                              <p class="card-text text-muted mb-3" style="flex:1;"><?= e(mb_strimwidth($recette['description'], 0, 100, '...')) ?></p>
+                              <a href="recette.php?slug=<?= e($recette['slug']) ?>" class="btn btn-danger btn-sm mt-auto">Voir la recette</a>
+                           </div>
+                        </div>
+                     </div>
+                  <?php endforeach; ?>
+               <?php else: ?>
+                  <div class="col-12 text-center">
+                     <p>Aucune recette ne correspond à ce filtre.</p>
+                  </div>
+               <?php endif; ?>
             </div>
 
             <!-- Pagination -->
@@ -280,8 +322,5 @@
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      <script src="js/recettes.js"></script>
    </body>
 </html>

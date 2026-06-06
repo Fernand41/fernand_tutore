@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/../includes/session.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
    <head>
@@ -113,17 +116,19 @@
          </div>
          
          <div id="alert-container"></div>
+         <?php displayFlash(); ?>
 
-         <form id="loginForm" novalidate>
+         <form id="loginForm" action="../actions/auth_login.php" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <div class="mb-3">
                <label class="flbl">Adresse email *</label>
-               <input type="email" id="loginEmail" class="form-control fctrl" placeholder="exemple@domaine.bj" required />
+               <input type="email" id="loginEmail" name="email" class="form-control fctrl" placeholder="exemple@domaine.bj" required />
                <div class="invalid-feedback">Veuillez entrer une adresse email valide.</div>
             </div>
             
             <div class="mb-4">
                <label class="flbl">Mot de passe *</label>
-               <input type="password" id="loginPassword" class="form-control fctrl" placeholder="••••••••" required />
+               <input type="password" id="loginPassword" name="mot_de_passe" class="form-control fctrl" placeholder="••••••••" required />
                <div class="invalid-feedback">Veuillez entrer votre mot de passe.</div>
             </div>
             
@@ -137,67 +142,5 @@
          </form>
       </div>
 
-      <!-- Scripts JS -->
-      <script src="js/jquery-3.7.1.min.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      
-      <script>
-         // Rediriger vers l'accueil si déjà connecté
-         if (localStorage.getItem('jwt_token')) {
-             window.location.href = 'index.php';
-         }
-
-         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-             e.preventDefault();
-             const form = e.target;
-             const emailInput = document.getElementById('loginEmail');
-             const passwordInput = document.getElementById('loginPassword');
-             const alertContainer = document.getElementById('alert-container');
-             
-             // Réinitialiser les validations
-             form.classList.remove('was-validated');
-             emailInput.classList.remove('is-invalid');
-             passwordInput.classList.remove('is-invalid');
-             alertContainer.innerHTML = '';
-
-             let isValid = true;
-
-             if (!emailInput.value.trim() || !emailInput.value.includes('@')) {
-                 emailInput.classList.add('is-invalid');
-                 isValid = false;
-             }
-
-             if (!passwordInput.value) {
-                 passwordInput.classList.add('is-invalid');
-                 isValid = false;
-             }
-
-             if (!isValid) return;
-
-             try {
-                 // Requête de connexion via apiRequest
-                 const data = await apiRequest('POST', '/auth/connexion', {
-                     email: emailInput.value.trim(),
-                     mot_de_passe: passwordInput.value
-                 });
-
-                 // Stocker dans le localStorage
-                 localStorage.setItem('jwt_token', data.token);
-                 localStorage.setItem('user_pseudo', data.user.nom);
-                 localStorage.setItem('user_email', data.user.email);
-
-                 // Rediriger vers la page d'accueil
-                 window.location.href = 'index.php';
-             } catch (error) {
-                 alertContainer.innerHTML = `
-                     <div class="alert p-3 d-flex align-items-center gap-2 mb-3">
-                         <i class="fas fa-exclamation-circle text-danger"></i>
-                         <div>${error.message || "Erreur de connexion."}</div>
-                     </div>
-                 `;
-             }
-         });
-      </script>
    </body>
 </html>

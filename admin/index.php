@@ -20,25 +20,33 @@ $nbRecettes        = (int) $pdo->query("SELECT COUNT(*) FROM recettes")->fetchCo
 $nbRecettesAttente = (int) $pdo->query("SELECT COUNT(*) FROM recettes WHERE statut = 'en_attente'")->fetchColumn();
 $nbUsers           = (int) $pdo->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn();
 $nbCommentaires    = (int) $pdo->query("SELECT COUNT(*) FROM commentaires WHERE statut = 'en_attente'")->fetchColumn();
+$nbFavoris         = 0;
+try {
+    $nbFavoris = (int) $pdo->query("SELECT COUNT(*) FROM favoris")->fetchColumn();
+} catch (Exception $e) {
+    // Table favoris introuvable ou erreur mineure, on laisse 0.
+}
 $nbCategories      = (int) $pdo->query("SELECT COUNT(*) FROM categories_recettes")->fetchColumn();
 
 // ── 5 dernières recettes soumises ────────────────────────────────────────────
+// CORRECTION : Tri par date_creation car date_publication est NULL pour les recettes en attente
 $dernieresRecettes = $pdo->query("
-    SELECT r.id, r.titre, r.statut, r.date_publication, u.pseudo
+    SELECT r.id, r.titre, r.statut, r.date_creation, u.pseudo
     FROM recettes r
     JOIN utilisateurs u ON r.id_auteur = u.id
-    ORDER BY r.date_publication DESC
+    ORDER BY r.date_creation DESC
     LIMIT 5
 ")->fetchAll();
 
 // ── 5 derniers commentaires en attente ───────────────────────────────────────
+// CORRECTION : c.date remplacé par c.date_creation conformément au schéma SQL
 $derniersCommentaires = $pdo->query("
-    SELECT c.id, c.contenu, c.date, c.statut, u.pseudo, r.titre AS titre_recette
+    SELECT c.id, c.contenu, c.date_creation, c.statut, u.pseudo, r.titre AS titre_recette
     FROM commentaires c
     JOIN utilisateurs u ON c.id_utilisateur = u.id
     JOIN recettes r     ON c.id_recette     = r.id
     WHERE c.statut = 'en_attente'
-    ORDER BY c.date DESC
+    ORDER BY c.date_creation DESC
     LIMIT 5
 ")->fetchAll();
 
@@ -51,7 +59,24 @@ $derniersUsers = $pdo->query("
 ")->fetchAll();
 
 // ── Moyenne des notes ─────────────────────────────────────────────────────────
-$moyenneNotes = (float) $pdo->query("SELECT COALESCE(ROUND(AVG(valeur),1), 0) FROM notes")->fetchColumn();
+$moyenneNotes = 0.0;
+try {
+    $moyenneNotes = (float) $pdo->query("SELECT COALESCE(ROUND(AVG(valeur),1), 0) FROM notes")->fetchColumn();
+} catch (Exception $e) {
+    $moyenneNotes = 0.0;
+}
+
+$categoriesState = [];
+try {
+    $categoriesState = $pdo->query("SELECT c.id, c.nom, c.slug,
+               (SELECT COUNT(*) FROM recettes r WHERE r.id_categorie = c.id) AS nb_recettes,
+               (SELECT COALESCE(ROUND(AVG(note_moyenne),1),0) FROM recettes r WHERE r.id_categorie = c.id) AS note_moyenne,
+               (SELECT COUNT(*) FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE r.id_categorie = c.id) AS nb_favoris
+        FROM categories_recettes c
+        ORDER BY nb_recettes DESC, c.nom ASC")->fetchAll();
+} catch (Exception $e) {
+    $categoriesState = [];
+}
 ?>
 
 <!-- ── Cartes statistiques ─────────────────────────────────────────────────── -->
@@ -92,6 +117,24 @@ $moyenneNotes = (float) $pdo->query("SELECT COALESCE(ROUND(AVG(valeur),1), 0) FR
          </div>
          <div class="card-footer bg-transparent border-0 pt-0">
             <a href="utilisateurs.php" class="btn btn-sm btn-outline-primary w-100">Gérer les utilisateurs</a>
+         </div>
+      </div>
+   </div>
+
+   <!-- Favoris -->
+   <div class="col-6 col-xl-3">
+      <div class="card border-0 shadow-sm h-100">
+         <div class="card-body d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-info bg-opacity-10 p-3">
+               <i class="bi bi-heart-fill fs-3 text-info"></i>
+            </div>
+            <div>
+               <div class="fs-2 fw-bold text-info"><?= $nbFavoris ?></div>
+               <div class="text-muted small">Favoris totaux</div>
+            </div>
+         </div>
+         <div class="card-footer bg-transparent border-0 pt-0">
+            <a href="recettes.php" class="btn btn-sm btn-outline-info w-100">Voir les recettes</a>
          </div>
       </div>
    </div>
@@ -138,6 +181,49 @@ $moyenneNotes = (float) $pdo->query("SELECT COALESCE(ROUND(AVG(valeur),1), 0) FR
 
 </div>
 
+<!-- ── État détaillé des recettes par catégorie -------------------------- -->
+<div class="row g-3 mb-4">
+   <div class="col-12">
+      <div class="card border-0 shadow-sm">
+         <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold">
+               <i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>
+               État détaillé des recettes par catégorie
+            </h6>
+            <a href="categories.php" class="btn btn-sm btn-outline-primary">Voir catégories</a>
+         </div>
+         <div class="card-body p-0">
+            <?php if (empty($categoriesState)): ?>
+               <p class="text-muted text-center py-5">Aucune statistique de catégorie disponible.</p>
+            <?php else: ?>
+            <div class="table-responsive">
+               <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                     <tr>
+                        <th>Catégorie</th>
+                        <th class="text-center">Recettes</th>
+                        <th class="text-center">Favoris</th>
+                        <th class="text-center">Note moy.</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <?php foreach ($categoriesState as $cat): ?>
+                     <tr>
+                        <td class="fw-semibold"><?= e($cat['nom']) ?></td>
+                        <td class="text-center"><?= $cat['nb_recettes'] ?></td>
+                        <td class="text-center"><?= $cat['nb_favoris'] ?></td>
+                        <td class="text-center"><?= number_format($cat['note_moyenne'], 1) ?>/5</td>
+                     </tr>
+                     <?php endforeach; ?>
+                  </tbody>
+               </table>
+            </div>
+            <?php endif; ?>
+         </div>
+      </div>
+   </div>
+</div>
+
 <!-- ── Ligne 2 : Dernières recettes + Derniers commentaires ───────────────── -->
 <div class="row g-3 mb-4">
 
@@ -172,7 +258,7 @@ $moyenneNotes = (float) $pdo->query("SELECT COALESCE(ROUND(AVG(valeur),1), 0) FR
                         </td>
                         <td><?= e($r['pseudo']) ?></td>
                         <td class="text-muted small">
-                           <?= date('d/m/Y', strtotime($r['date_publication'])) ?>
+                           <?= date('d/m/Y', strtotime($r['date_creation'])) ?>
                         </td>
                         <td>
                            <?php

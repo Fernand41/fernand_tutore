@@ -11,15 +11,15 @@ require_once __DIR__ . '/../config/database.php';
 
 // Accepter uniquement POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../pages/soumettre.php');
+    header('Location: ../front_end/soumettre-recette.php');
     exit;
 }
 
 // Utilisateur connecté obligatoire
-requireAuth('../pages/login.php');
+requireAuth('login.php');
 
 // Vérification CSRF
-verifyCsrf('../pages/soumettre.php');
+verifyCsrf('../front_end/soumettre-recette.php');
 
 // ── Récupérer les champs ──────────────────────
 $titre         = trim($_POST['titre']         ?? '');
@@ -29,7 +29,7 @@ $etapes        = trim($_POST['etapes']        ?? '');
 $difficulte    = trim($_POST['difficulte']    ?? '');
 $temps_prep    = (int) ($_POST['temps_prep']    ?? 0);
 $temps_cuisson = (int) ($_POST['temps_cuisson'] ?? 0);
-$portion       = (int) ($_POST['portion']       ?? 0);
+$nb_personnes  = (int) ($_POST['portion']       ?? 0);
 $id_categorie  = (int) ($_POST['id_categorie']  ?? 0);
 
 // ── Validations ───────────────────────────────
@@ -59,7 +59,7 @@ if ($temps_prep <= 0) {
 
 if (!empty($erreurs)) {
     setFlash('danger', implode('<br>', $erreurs));
-    header('Location: ../pages/soumettre.php');
+    header('Location: ../front_end/soumettre-recette.php');
     exit;
 }
 
@@ -72,14 +72,14 @@ try {
     $catStmt->execute([$id_categorie]);
     if (!$catStmt->fetch()) {
         setFlash('danger', 'La catégorie choisie est invalide.');
-        header('Location: ../pages/soumettre.php');
+        header('Location: ../front_end/soumettre-recette.php');
         exit;
     }
 
 } catch (PDOException $e) {
     error_log('[recette_submit] Erreur BDD : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue. Veuillez réessayer.');
-    header('Location: ../pages/soumettre.php');
+    header('Location: ../front_end/soumettre-recette.php');
     exit;
 }
 
@@ -100,13 +100,13 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE)
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
         setFlash('danger', "Erreur lors de l'upload de l'image (code : {$file['error']}).");
-        header('Location: ../pages/soumettre.php');
+        header('Location: ../front_end/soumettre-recette.php');
         exit;
     }
 
     if ($file['size'] > $maxSize) {
         setFlash('danger', "L'image ne doit pas dépasser 3 Mo.");
-        header('Location: ../pages/soumettre.php');
+        header('Location: ../front_end/soumettre-recette.php');
         exit;
     }
 
@@ -117,7 +117,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE)
 
     if (!in_array($mimeType, $allowed)) {
         setFlash('danger', "Format d'image non supporté. Utilisez JPG, PNG ou WebP.");
-        header('Location: ../pages/soumettre.php');
+        header('Location: ../front_end/soumettre-recette.php');
         exit;
     }
 
@@ -126,7 +126,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE)
 
     if (!move_uploaded_file($file['tmp_name'], $uploadDir . $imageFilename)) {
         setFlash('danger', "Impossible de sauvegarder l'image. Vérifiez les permissions.");
-        header('Location: ../pages/soumettre.php');
+        header('Location: ../front_end/soumettre-recette.php');
         exit;
     }
 }
@@ -160,14 +160,14 @@ try {
     $stmt = $pdo->prepare("
         INSERT INTO recettes
             (titre, slug, description, ingredients, etapes, difficulte,
-             temps_prep, temps_cuisson, portion, image, id_categorie, id_auteur, statut, created_at)
+             temps_prep, temps_cuisson, nb_personnes, image, id_categorie, id_auteur, statut)
         VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', NOW())
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
     ");
 
     $stmt->execute([
         $titre, $slug, $description, $ingredients, $etapes, $difficulte,
-        $temps_prep, $temps_cuisson, $portion,
+        $temps_prep, $temps_cuisson, $nb_personnes,
         $imageFilename,
         $id_categorie,
         currentUserId(),
@@ -180,11 +180,11 @@ try {
     }
     error_log('[recette_submit] Erreur insertion : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue lors de la soumission. Veuillez réessayer.');
-    header('Location: ../pages/soumettre.php');
+    header('Location: ../front_end/soumettre-recette.php');
     exit;
 }
 
 // ── Succès ────────────────────────────────────
 setFlash('success', '✅ Votre recette <strong>' . e($titre) . '</strong> a été soumise avec succès ! Elle sera publiée après validation par l\'équipe.');
-header('Location: ../pages/profil.php');
+header('Location: ../front_end/profil.php');
 exit;

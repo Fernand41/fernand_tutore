@@ -1,3 +1,24 @@
+<?php
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../config/database.php';
+$pdo = Database::getInstance();
+
+requireAuth('login.php');
+
+$userName = currentUserName() ?? 'Utilisateur';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userRole  = currentUserRole() ?? 'Membre';
+
+$favorites = [];
+try {
+    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE f.id_user = ? AND r.statut = "publie" ORDER BY f.date_ajout DESC LIMIT 6');
+    $stmt->execute([currentUserId()]);
+    $favorites = $stmt->fetchAll();
+} catch (Exception $e) {
+    // Si la table favoris n'existe pas ou qu'il y a une erreur, on ignore.
+    $favorites = [];
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
    <head>
@@ -164,14 +185,14 @@
                <!-- Left Sidebar Profile Info -->
                <div class="col-lg-4" data-aos="fade-right">
                   <div class="profile-card text-center">
-                     <div class="profile-avatar-large" id="profileAvatar">U</div>
-                     <h3 class="fw-bold mb-1" id="profileName">Chargement...</h3>
-                     <p class="text-muted mb-3" id="profileEmail">...</p>
-                     <span class="badge bg-dark px-3 py-2 mb-4" id="profileRole">Membre</span>
+                     <div class="profile-avatar-large"><?= strtoupper(substr(e($userName), 0, 1)) ?></div>
+                     <h3 class="fw-bold mb-1"><?= e($userName) ?></h3>
+                     <p class="text-muted mb-3"><?= e($userEmail) ?></p>
+                     <span class="badge bg-dark px-3 py-2 mb-4"><?= e(ucfirst($userRole)) ?></span>
                      
                      <div class="d-grid gap-2 border-top pt-4">
                         <a href="soumettre-recette.php" class="btn btn-danger py-2 fw-semibold"><i class="fas fa-plus-circle me-1"></i> Proposer une recette</a>
-                        <button class="btn btn-outline-dark py-2" id="profileLogoutBtn"><i class="fas fa-sign-out-alt me-1"></i> Se déconnecter</button>
+                        <a href="../actions/auth_logout.php" class="btn btn-outline-dark py-2"><i class="fas fa-sign-out-alt me-1"></i> Se déconnecter</a>
                      </div>
                   </div>
                </div>
@@ -183,12 +204,24 @@
                      
                      <!-- Grid for Favorites -->
                      <div class="row g-4" id="favoritesGrid">
-                        <!-- Recettes favorites injectées dynamiquement -->
-                        <div class="col-12 text-center py-5">
-                           <div class="spinner-border text-danger" role="status">
-                              <span class="visually-hidden">Chargement...</span>
+                        <?php if (!empty($favorites)): ?>
+                           <?php foreach ($favorites as $favorite): ?>
+                              <?php $favImage = $favorite['image'] ? 'uploads/recettes/' . $favorite['image'] : 'img/menu/1.jpg'; ?>
+                              <div class="col-md-6">
+                                 <div class="card border-0 shadow-sm">
+                                    <img src="<?= e($favImage) ?>" class="card-img-top" alt="<?= e($favorite['titre']) ?>" style="height:180px;object-fit:cover;"/>
+                                    <div class="card-body">
+                                       <h6 class="fw-semibold mb-2"><?= e($favorite['titre']) ?></h6>
+                                       <a href="recette.php?slug=<?= e($favorite['slug']) ?>" class="text-danger text-decoration-none">Voir la recette</a>
+                                    </div>
+                                 </div>
+                              </div>
+                           <?php endforeach; ?>
+                        <?php else: ?>
+                           <div class="col-12 text-center py-5">
+                              <p class="mb-0 text-muted">Vous n'avez pas encore de recettes favorites.</p>
                            </div>
-                        </div>
+                        <?php endif; ?>
                      </div>
                   </div>
                </div>
@@ -272,8 +305,5 @@
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      <script src="js/profil.js"></script>
    </body>
 </html>

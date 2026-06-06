@@ -10,12 +10,12 @@ require_once __DIR__ . '/../config/database.php';
 
 // Accepter uniquement les requêtes POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../pages/inscription.php');
+    header('Location: ../front_end/inscription.php');
     exit;
 }
 
 // Vérification CSRF
-verifyCsrf('../pages/inscription.php');
+verifyCsrf('../front_end/inscription.php');
 
 // Récupérer et nettoyer les champs
 $pseudo         = trim($_POST['pseudo']         ?? '');
@@ -54,7 +54,7 @@ if (!empty($erreurs)) {
     // Repasser le pseudo et email pour repré-remplir le formulaire
     $_SESSION['form_pseudo'] = $pseudo;
     $_SESSION['form_email']  = $email;
-    header('Location: ../pages/inscription.php');
+    header('Location: ../front_end/inscription.php');
     exit;
 }
 
@@ -67,7 +67,7 @@ try {
     if ($stmt->fetch()) {
         setFlash('danger', 'Cette adresse email est déjà utilisée.');
         $_SESSION['form_pseudo'] = $pseudo;
-        header('Location: ../pages/inscription.php');
+        header('Location: ../front_end/inscription.php');
         exit;
     }
 
@@ -76,14 +76,14 @@ try {
     if ($stmt->fetch()) {
         setFlash('danger', 'Ce pseudo est déjà pris, choisissez-en un autre.');
         $_SESSION['form_email'] = $email;
-        header('Location: ../pages/inscription.php');
+        header('Location: ../front_end/inscription.php');
         exit;
     }
 
 } catch (PDOException $e) {
     error_log('[auth_register] Erreur BDD vérif : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue. Veuillez réessayer.');
-    header('Location: ../pages/inscription.php');
+    header('Location: ../front_end/inscription.php');
     exit;
 }
 
@@ -92,8 +92,8 @@ try {
     $motDePasseHache = password_hash($mot_de_passe, PASSWORD_BCRYPT);
 
     $stmt = $pdo->prepare("
-        INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role, created_at)
-        VALUES (?, ?, ?, 'utilisateur', NOW())
+        INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role)
+        VALUES (?, ?, ?, 'user')
     ");
     $stmt->execute([$pseudo, $email, $motDePasseHache]);
 
@@ -102,7 +102,7 @@ try {
 } catch (PDOException $e) {
     error_log('[auth_register] Erreur insertion : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue lors de la création du compte.');
-    header('Location: ../pages/inscription.php');
+    header('Location: ../front_end/inscription.php');
     exit;
 }
 
@@ -116,5 +116,5 @@ $newUser = [
 loginUser($newUser);
 
 setFlash('success', 'Compte créé avec succès ! Bienvenue, ' . e($pseudo) . ' 🎉');
-header('Location: ../pages/profil.php');
+header('Location: ../front_end/profil.php');
 exit;

@@ -19,5 +19,5 @@ logoutUser();
 session_start(); // Redémarrer pour pouvoir poser le flash
 setFlash('success', 'Vous avez été déconnecté avec succès.');
 
-header('Location: ../pages/login.php');
+header('Location: ../front_end/login.php');
 exit;

@@ -1,3 +1,11 @@
+<?php
+require_once __DIR__ . '/../includes/session.php';
+require_once __DIR__ . '/../config/database.php';
+requireAuth('login.php');
+
+$pdo = Database::getInstance();
+$categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom")->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="fr">
    <head>
@@ -201,13 +209,14 @@
                   <div class="form-card">
                      <h3 class="fw-bold mb-4" style="color: var(--dark);"><i class="fas fa-clipboard-list text-danger me-2"></i>Informations sur la recette</h3>
                      
-                     <form id="submitRecipeForm" enctype="multipart/form-data">
+                     <form id="submitRecipeForm" action="../actions/recette_submit.php" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                         <div class="row g-4">
                            <!-- Titre -->
                            <div class="col-md-8">
                               <div class="form-group">
                                  <label for="recipeTitleInput" class="form-label-custom">Titre de la recette</label>
-                                 <input type="text" class="form-control form-control-custom" id="recipeTitleInput" placeholder="Ex: Sauce Graine au poisson fumé" required>
+                                 <input type="text" class="form-control form-control-custom" id="recipeTitleInput" name="titre" placeholder="Ex: Sauce Graine au poisson fumé" required>
                               </div>
                            </div>
 
@@ -215,9 +224,11 @@
                            <div class="col-md-4">
                               <div class="form-group">
                                  <label for="recipeCategorySelect" class="form-label-custom">Catégorie</label>
-                                 <select class="form-select form-control-custom" id="recipeCategorySelect" required>
+                                 <select class="form-select form-control-custom" id="recipeCategorySelect" name="id_categorie" required>
                                     <option value="" disabled selected>Choisir une catégorie</option>
-                                    <!-- Chargé dynamiquement -->
+                                    <?php foreach ($categories as $cat): ?>
+                                       <option value="<?= e($cat['id']) ?>"><?= e($cat['nom']) ?></option>
+                                    <?php endforeach; ?>
                                  </select>
                               </div>
                            </div>
@@ -226,7 +237,7 @@
                            <div class="col-12">
                               <div class="form-group">
                                  <label for="recipeDescInput" class="form-label-custom">Courte description</label>
-                                 <textarea class="form-control form-control-custom" id="recipeDescInput" rows="3" placeholder="Présentez brièvement l'histoire ou le goût de cette recette..." required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeDescInput" name="description" rows="3" placeholder="Présentez brièvement l'histoire ou le goût de cette recette..." required></textarea>
                               </div>
                            </div>
 
@@ -234,7 +245,7 @@
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipeDifficultySelect" class="form-label-custom">Difficulté</label>
-                                 <select class="form-select form-control-custom" id="recipeDifficultySelect" required>
+                                 <select class="form-select form-control-custom" id="recipeDifficultySelect" name="difficulte" required>
                                     <option value="facile">Facile</option>
                                     <option value="moyen" selected>Moyen</option>
                                     <option value="difficile">Difficile</option>
@@ -244,19 +255,19 @@
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipePrepInput" class="form-label-custom">Temps prép (min)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipePrepInput" min="1" placeholder="Ex: 20" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipePrepInput" name="temps_prep" min="1" placeholder="Ex: 20" required>
                               </div>
                            </div>
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipeCookInput" class="form-label-custom">Temps cuisson (min)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipeCookInput" min="0" placeholder="Ex: 30" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipeCookInput" name="temps_cuisson" min="0" placeholder="Ex: 30" required>
                               </div>
                            </div>
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipePortionsInput" class="form-label-custom">Portions (pers.)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipePortionsInput" min="1" placeholder="Ex: 4" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipePortionsInput" name="portion" min="1" placeholder="Ex: 4" required>
                               </div>
                            </div>
 
@@ -264,7 +275,7 @@
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="recipeIngredientsInput" class="form-label-custom">Ingrédients (un par ligne)</label>
-                                 <textarea class="form-control form-control-custom" id="recipeIngredientsInput" rows="8" placeholder="500g de farine de maïs&#10;2 tomates fraîches&#10;1 oignon rouge&#10;Du poisson fumé" required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeIngredientsInput" name="ingredients" rows="8" placeholder="500g de farine de maïs&#10;2 tomates fraîches&#10;1 oignon rouge&#10;Du poisson fumé" required></textarea>
                               </div>
                            </div>
 
@@ -272,7 +283,7 @@
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="recipeStepsInput" class="form-label-custom">Étapes de préparation (une par ligne)</label>
-                                 <textarea class="form-control form-control-custom" id="recipeStepsInput" rows="8" placeholder="Écraser les tomates et les oignons.&#10;Faire cuire le mélange dans une casserole.&#10;Ajouter l'eau de cuisson et les poissons." required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeStepsInput" name="etapes" rows="8" placeholder="Écraser les tomates et les oignons.&#10;Faire cuire le mélange dans une casserole.&#10;Ajouter l'eau de cuisson et les poissons." required></textarea>
                               </div>
                            </div>
 
@@ -286,7 +297,7 @@
                                     <span class="text-muted small mt-1">Formats acceptés : JPG, PNG, WEBP (Max 5Mo)</span>
                                     <img src="#" id="imagePreview" alt="Prévisualisation"/>
                                  </div>
-                                 <input type="file" id="recipeImageFile" accept="image/*" class="d-none">
+                                 <input type="file" id="recipeImageFile" name="image" accept="image/*" class="d-none">
                               </div>
                            </div>
 
@@ -382,8 +393,6 @@
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      <script src="js/soumettre.js"></script>
+      <script src="js/main.js"></script>
    </body>
 </html>

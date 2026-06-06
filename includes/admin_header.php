@@ -6,7 +6,7 @@
  * Variables attendues avant l'include :
  *   $adminPageTitle  — titre de la page (ex : "Recettes | Admin")
  *   $adminActivePage — page active pour surbrillance sidebar
- *                      valeurs : 'dashboard' | 'recettes' | 'commentaires' | 'utilisateurs' | 'categories'
+ *                      valeurs : 'dashboard' | 'recettes' | 'commentaires' | 'favoris' | 'utilisateurs' | 'categories'
  *   $breadcrumb      — tableau [['label'=>'Recettes','url'=>'recettes.php'], ...]
  *                      Le dernier élément est automatiquement "active".
  */
@@ -14,7 +14,7 @@
 require_once __DIR__ . '/session.php';
 
 // Protection : seul un admin peut accéder
-requireAdmin('../pages/login.php');
+requireAdmin('../front_end/login.php');
 
 $adminPageTitle  = $adminPageTitle  ?? 'Administration | Goûts du Bénin';
 $adminActivePage = $adminActivePage ?? 'dashboard';
@@ -71,18 +71,22 @@ $userName = e(currentUserName() ?? 'Admin');
          <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown user-menu">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                  <img src="<?= $adminAssets ?>/assets/img/user2-160x160.jpg"
-                       class="user-image rounded-circle shadow" alt="Avatar"/>
-                  <span class="d-none d-md-inline"><?= $userName ?></span>
+                  <span class="user-image rounded-circle shadow bg-success text-white d-inline-flex align-items-center justify-content-center" style="width:2rem;height:2rem;">
+                     <?= strtoupper(substr($userName, 0, 1)) ?>
+                  </span>
+                  <span class="d-none d-md-inline ms-2"><?= $userName ?></span>
                </a>
                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                  <li class="user-header text-bg-success">
-                     <img src="<?= $adminAssets ?>/assets/img/user2-160x160.jpg"
-                          class="rounded-circle shadow" alt="Avatar"/>
-                     <p>
-                        <?= $userName ?>
+                  <li class="user-header text-bg-success d-flex align-items-center gap-3">
+                     <span class="rounded-circle shadow bg-white text-success d-inline-flex align-items-center justify-content-center" style="width:3rem;height:3rem;font-weight:700;font-size:1.1rem;">
+                        <?= strtoupper(substr($userName, 0, 1)) ?>
+                     </span>
+                     <div>
+                        <p class="mb-0">
+                           <?= $userName ?>
+                        </p>
                         <small>Administrateur · Goûts du Bénin</small>
-                     </p>
+                     </div>
                   </li>
                   <li class="user-footer border-top border-secondary">
                      <a href="../pages/profil.php" class="btn btn-success btn-flat">Profil</a>
@@ -116,9 +120,7 @@ $userName = e(currentUserName() ?? 'Admin');
          <!-- Info utilisateur -->
          <div class="user-panel mt-3 pb-3 mb-3 d-flex border-bottom border-secondary align-items-center px-3">
             <div class="image">
-               <img src="<?= $adminAssets ?>/assets/img/user2-160x160.jpg"
-                    class="img-circle elevation-2"
-                    style="width:2.1rem;height:2.1rem;" alt="Avatar"/>
+               <span class="img-circle elevation-2 bg-success text-white d-inline-flex align-items-center justify-content-center" style="width:2.1rem;height:2.1rem;font-weight:700;"><?= strtoupper(substr($userName, 0, 1)) ?></span>
             </div>
             <div class="info ps-3">
                <span class="d-block text-white fw-bold"><?= $userName ?></span>
@@ -173,6 +175,14 @@ $userName = e(currentUserName() ?? 'Admin');
                </li>
 
                <li class="nav-item">
+                  <a href="favoris.php"
+                     class="nav-link <?= $adminActivePage === 'favoris' ? 'active' : '' ?>">
+                     <i class="nav-icon bi bi-heart-fill"></i>
+                     <p>Favoris & Notes</p>
+                  </a>
+               </li>
+
+               <li class="nav-item">
                   <a href="utilisateurs.php"
                      class="nav-link <?= $adminActivePage === 'utilisateurs' ? 'active' : '' ?>">
                      <i class="nav-icon bi bi-people-fill"></i>
@@ -191,7 +201,7 @@ $userName = e(currentUserName() ?? 'Admin');
                <li class="nav-header border-top border-secondary mt-3 pt-2">SESSION</li>
 
                <li class="nav-item">
-                  <a href="../pages/index.php" class="nav-link" target="_blank">
+                  <a href="../front_end/index.php" class="nav-link" target="_blank">
                      <i class="nav-icon bi bi-house-door-fill"></i>
                      <p>Voir le site</p>
                   </a>

@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/session.php';
+$pdo = Database::getInstance();
+
+$categories = $pdo->query('SELECT id, nom, slug FROM categories_recettes ORDER BY nom')->fetchAll();
+$latestRecipes = $pdo->query(
+    'SELECT r.id, r.slug, r.titre, r.description, r.image, c.nom AS categorie
+     FROM recettes r
+     JOIN categories_recettes c ON r.id_categorie = c.id
+     WHERE r.statut = "publie"
+     ORDER BY r.date_publication DESC, r.date_creation DESC
+     LIMIT 6'
+)->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -209,7 +224,24 @@
                <p class="sdesc mx-auto" style="max-width:480px;">Découvrez les saveurs béninoises organisées par catégories. Chaque recette raconte une histoire</p>
             </div>
             <div class="row g-3 justify-content-center">
-               <!-- Les catégories seront injectées ici par home.js -->
+               <?php if (!empty($categories)): ?>
+                   <?php foreach ($categories as $categorie): ?>
+                      <div class="col-sm-6 col-lg-4" data-aos="fade-up">
+                         <div class="category-card rounded-4 overflow-hidden shadow-sm text-center p-4 bg-white h-100">
+                            <div class="cat-thumb mb-3">
+                               <img src="img/menu/1.jpg" alt="<?= e($categorie['nom']) ?>" class="img-fluid rounded-4"/>
+                            </div>
+                            <h5 class="mb-2"><?= e($categorie['nom']) ?></h5>
+                            <p class="text-muted small">Explorez les recettes de cette catégorie.</p>
+                            <a href="recettes.php?categorie=<?= e($categorie['slug']) ?>" class="btn btn-outline-danger btn-sm mt-2">Voir les recettes</a>
+                         </div>
+                      </div>
+                   <?php endforeach; ?>
+               <?php else: ?>
+                  <div class="col-12 text-center">
+                     <p>Aucune catégorie disponible pour le moment.</p>
+                  </div>
+               <?php endif; ?>
             </div>
          </div>
       </section>
@@ -273,7 +305,26 @@
                <!-- Boutons de filtre injectés dynamiquement -->
             </div>
             <div class="row g-4" id="mgrid">
-               <!-- Recettes chargées dynamiquement -->
+               <?php if (!empty($latestRecipes)): ?>
+                  <?php foreach ($latestRecipes as $recette): ?>
+                     <?php $recipeImage = $recette['image'] ? 'uploads/recettes/' . $recette['image'] : 'img/menu/1.jpg'; ?>
+                     <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                           <img src="<?= e($recipeImage) ?>" class="card-img-top" alt="<?= e($recette['titre']) ?>" style="height:240px;object-fit:cover;"/>
+                           <div class="card-body d-flex flex-column">
+                              <span class="badge bg-danger mb-2"><?= e($recette['categorie']) ?></span>
+                              <h5 class="card-title"><?= e($recette['titre']) ?></h5>
+                              <p class="card-text text-muted mb-3" style="flex:1;"><?= e(mb_strimwidth($recette['description'], 0, 110, '...')) ?></p>
+                              <a href="recette.php?slug=<?= e($recette['slug']) ?>" class="btn btn-danger btn-sm mt-auto">Voir la recette</a>
+                           </div>
+                        </div>
+                     </div>
+                  <?php endforeach; ?>
+               <?php else: ?>
+                  <div class="col-12 text-center">
+                     <p>Aucune recette publiée pour le moment.</p>
+                  </div>
+               <?php endif; ?>
             </div>
             <!-- end #mgrid -->
          </div>
@@ -907,8 +958,5 @@
       <!-- Main js -->
       <script src="js/main.js"></script>
       <!-- API REST Integration -->
-      <script src="js/api.js"></script>
-      <script src="js/auth.js"></script>
-      <script src="js/home.js"></script>
    </body>
 </html>

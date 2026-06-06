@@ -4,6 +4,14 @@ AOS.init({
     offset: 55
 });
 
+// Fonction utilitaire pour ajouter des event listeners de manière sûre
+function safeAddEventListener(selector, event, callback) {
+    var el = typeof selector === 'string' ? document.getElementById(selector) : selector;
+    if (el) {
+        el.addEventListener(event, callback);
+    }
+}
+
 /* NAVBAR SCROLL & ACTIVE LINK  */
 window.addEventListener('scroll', function() {
     document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
@@ -166,7 +174,13 @@ document.querySelectorAll('.catcard').forEach(function(card) {
 var menuPop = document.getElementById('menuPop');
 var mpQty = 1;
 
+    if (!menuPop) {
+        // menuPop n'existe pas sur cette page, ajouter des stubs pour éviter les erreurs
+        window.openMenuPop = function() {};
+        window.closeMenuPop = function() {};
+    }
 function openMenuPop(card) {
+    if (!menuPop) return;
     var img = card.getAttribute('data-img');
     var title = card.getAttribute('data-title');
     var cat = card.getAttribute('data-cat');
@@ -240,13 +254,20 @@ document.querySelectorAll('.mhrt').forEach(function(btn) {
 });
 
 // Close popup
-document.getElementById('mpClose').addEventListener('click', closeMenuPop);
-menuPop.addEventListener('click', function(e) {
+var mpCloseBtn = document.getElementById('mpClose');
+if (mpCloseBtn) {
+    mpCloseBtn.addEventListener('click', closeMenuPop);
+}
+if (menuPop) {
+    menuPop.addEventListener('click', function(e) {
     if (e.target === this) closeMenuPop();
-});
+    });
+}
 
 function closeMenuPop() {
-    menuPop.classList.remove('open');
+    if (menuPop) {
+        menuPop.classList.remove('open');
+    }
     document.body.style.overflow = '';
 }
 
