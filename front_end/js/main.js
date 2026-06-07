@@ -14,8 +14,10 @@ function safeAddEventListener(selector, event, callback) {
 
 /* NAVBAR SCROLL & ACTIVE LINK  */
 window.addEventListener('scroll', function() {
-    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
-    document.getElementById('btt').classList.toggle('show', window.scrollY > 300);
+    var navEl = document.getElementById('nav');
+    if (navEl) navEl.classList.toggle('scrolled', window.scrollY > 60);
+    var bttEl = document.getElementById('btt');
+    if (bttEl) bttEl.classList.toggle('show', window.scrollY > 300);
     document.querySelectorAll('section[id]').forEach(function(sec) {
         var top = sec.offsetTop - 110,
             bot = top + sec.offsetHeight;
@@ -61,20 +63,25 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a) {
 
 var searchOv = document.getElementById('searchOv');
 
-document.getElementById('navSearchBtn').addEventListener('click', function() {
-    searchOv.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(function() {
-        document.getElementById('searchInput').focus();
-    }, 220);
+safeAddEventListener('navSearchBtn', 'click', function() {
+    if (searchOv) {
+        searchOv.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function() {
+            var searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.focus();
+        }, 220);
+    }
 });
 
-document.getElementById('searchClose').addEventListener('click', closeSearch);
+safeAddEventListener('searchClose', 'click', closeSearch);
 
 // Close when clicking backdrop
-searchOv.addEventListener('click', function(e) {
-    if (e.target === searchOv) closeSearch();
-});
+if (searchOv) {
+    searchOv.addEventListener('click', function(e) {
+        if (e.target === searchOv) closeSearch();
+    });
+}
 
 function closeSearch() {
     searchOv.classList.remove('open');
@@ -92,10 +99,13 @@ document.querySelectorAll('.sovcat').forEach(function(btn) {
         closeSearch();
         setTimeout(function() {
             filterMenu(f);
-            document.getElementById('menu').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            var menu = document.getElementById('menu');
+            if (menu) {
+                menu.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }, 300);
     });
 });
@@ -103,8 +113,11 @@ document.querySelectorAll('.sovcat').forEach(function(btn) {
 // Trending tags fill the search input
 document.querySelectorAll('.sovtrend .ttag').forEach(function(t) {
     t.addEventListener('click', function() {
-        document.getElementById('searchInput').value = this.textContent.trim();
-        document.getElementById('searchInput').focus();
+        var searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = this.textContent.trim();
+            searchInput.focus();
+        }
     });
 });
 
@@ -160,10 +173,13 @@ document.querySelectorAll('.filtbtn').forEach(function(btn) {
 document.querySelectorAll('.catcard').forEach(function(card) {
     card.addEventListener('click', function() {
         var f = this.getAttribute('data-filter');
-        window.scrollTo({
-            top: document.getElementById('menu').offsetTop - 80,
-            behavior: 'smooth'
-        });
+        var menu = document.getElementById('menu');
+        if (menu) {
+            window.scrollTo({
+                top: menu.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
         setTimeout(function() {
             filterMenu(f);
         }, 480);
@@ -272,17 +288,24 @@ function closeMenuPop() {
 }
 
 // Qty +/-
-document.getElementById('mpPlus').addEventListener('click', function() {
-    document.getElementById('mpQnum').textContent = ++mpQty;
+safeAddEventListener('mpPlus', 'click', function() {
+    var quantityEl = document.getElementById('mpQnum');
+    if (quantityEl) quantityEl.textContent = ++mpQty;
 });
-document.getElementById('mpMinus').addEventListener('click', function() {
-    if (mpQty > 1) document.getElementById('mpQnum').textContent = --mpQty;
+safeAddEventListener('mpMinus', 'click', function() {
+    if (mpQty > 1) {
+        var quantityEl = document.getElementById('mpQnum');
+        if (quantityEl) quantityEl.textContent = --mpQty;
+    }
 });
 
 // Add to cart button
-document.getElementById('mpAddCart').addEventListener('click', function() {
-    var cnt = parseInt(document.getElementById('cartCount').textContent) + mpQty;
-    document.getElementById('cartCount').textContent = cnt;
+safeAddEventListener('mpAddCart', 'click', function() {
+    var cartCountEl = document.getElementById('cartCount');
+    if (cartCountEl) {
+        var cnt = parseInt(cartCountEl.textContent) + mpQty;
+        cartCountEl.textContent = cnt;
+    }
     this.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
     this.style.background = 'linear-gradient(135deg,var(--green),#1a4a35)';
     var self = this;
@@ -294,7 +317,7 @@ document.getElementById('mpAddCart').addEventListener('click', function() {
 });
 
 
-document.getElementById('resBtn').addEventListener('click', function() {
+safeAddEventListener('resBtn', 'click', function() {
     var btn = this;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
     btn.disabled = true;
@@ -302,16 +325,18 @@ document.getElementById('resBtn').addEventListener('click', function() {
         btn.innerHTML = '<i class="fas fa-calendar-check"></i> Confirm Reservation';
         btn.disabled = false;
         var ok = document.getElementById('resOk');
-        ok.style.display = 'block';
-        ok.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
+        if (ok) {
+            ok.style.display = 'block';
+            ok.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
     }, 1500);
 });
 
 
-document.getElementById('ctcBtn').addEventListener('click', function() {
+safeAddEventListener('ctcBtn', 'click', function() {
     var btn = this;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     btn.disabled = true;
@@ -319,11 +344,13 @@ document.getElementById('ctcBtn').addEventListener('click', function() {
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
         btn.disabled = false;
         var ok = document.getElementById('ctcOk');
-        ok.style.display = 'block';
-        ok.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
+        if (ok) {
+            ok.style.display = 'block';
+            ok.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
     }, 1500);
 });
 
@@ -346,27 +373,34 @@ document.querySelectorAll('.gitem').forEach(function(item) {
 function openGal(i) {
     galIdx = i;
     var g = galData[i];
-    document.getElementById('gpImg').setAttribute('src', g.img);
-    document.getElementById('gpTitle').textContent = g.title;
-    document.getElementById('gpDesc').innerHTML = g.desc;
-    galPop.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    var gpImg = document.getElementById('gpImg');
+    var gpTitle = document.getElementById('gpTitle');
+    var gpDesc = document.getElementById('gpDesc');
+    if (gpImg) gpImg.setAttribute('src', g.img);
+    if (gpTitle) gpTitle.textContent = g.title;
+    if (gpDesc) gpDesc.innerHTML = g.desc;
+    if (galPop) {
+        galPop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
-document.getElementById('gpClose').addEventListener('click', closeGal);
-galPop.addEventListener('click', function(e) {
-    if (e.target === this) closeGal();
-});
+safeAddEventListener('gpClose', 'click', closeGal);
+if (galPop) {
+    galPop.addEventListener('click', function(e) {
+        if (e.target === this) closeGal();
+    });
+}
 
 function closeGal() {
-    galPop.classList.remove('open');
+    if (galPop) galPop.classList.remove('open');
     document.body.style.overflow = '';
 }
 
-document.getElementById('gpPrev').addEventListener('click', function() {
+safeAddEventListener('gpPrev', 'click', function() {
     openGal((galIdx - 1 + galData.length) % galData.length);
 });
-document.getElementById('gpNext').addEventListener('click', function() {
+safeAddEventListener('gpNext', 'click', function() {
     openGal((galIdx + 1) % galData.length);
 });
 
@@ -422,20 +456,24 @@ setInterval(function() {
         cM = 45;
         cS = 30;
     }
-    document.getElementById('cdH').textContent = String(cH).padStart(2, '0');
-    document.getElementById('cdM').textContent = String(cM).padStart(2, '0');
-    document.getElementById('cdS').textContent = String(cS).padStart(2, '0');
+    var cdH = document.getElementById('cdH');
+    var cdM = document.getElementById('cdM');
+    var cdS = document.getElementById('cdS');
+    if (cdH) cdH.textContent = String(cH).padStart(2, '0');
+    if (cdM) cdM.textContent = String(cM).padStart(2, '0');
+    if (cdS) cdS.textContent = String(cS).padStart(2, '0');
 }, 1000);
 
 /* â”€â”€ NEWSLETTER â”€â”€ */
-document.getElementById('nlBtn').addEventListener('click', function() {
-    var email = document.getElementById('nlEmail').value;
+safeAddEventListener('nlBtn', 'click', function() {
+    var emailEl = document.getElementById('nlEmail');
+    var email = emailEl ? emailEl.value : '';
     if (email && email.includes('@')) {
         var btn = this;
         btn.textContent = 'âœ“ Subscribed!';
         btn.style.background = '#4ade80';
         btn.style.color = '#222';
-        document.getElementById('nlEmail').value = '';
+        if (emailEl) emailEl.value = '';
         setTimeout(function() {
             btn.textContent = 'Subscribe';
             btn.style.background = '';

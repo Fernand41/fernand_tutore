@@ -127,20 +127,25 @@ require_once __DIR__ . '/../includes/session.php';
             <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
             <div class="mb-3">
                <label class="flbl">Pseudo / Nom d'utilisateur *</label>
-               <input type="text" id="registerPseudo" class="form-control fctrl" placeholder="Ex: Koffi97" required />
+               <input type="text" id="registerPseudo" name="pseudo" class="form-control fctrl" placeholder="Ex: Koffi97" required />
                <div class="invalid-feedback">Le pseudo est obligatoire.</div>
             </div>
 
             <div class="mb-3">
                <label class="flbl">Adresse email *</label>
-               <input type="email" id="registerEmail" class="form-control fctrl" placeholder="exemple@domaine.bj" required />
+               <input type="email" id="registerEmail" name="email" class="form-control fctrl" placeholder="exemple@domaine.bj" required />
                <div class="invalid-feedback">Veuillez entrer une adresse email valide.</div>
             </div>
             
             <div class="mb-4">
                <label class="flbl">Mot de passe *</label>
-               <input type="password" id="registerPassword" class="form-control fctrl" placeholder="Minimum 6 caractères" required minlength="6" />
-               <div class="invalid-feedback">Le mot de passe doit contenir au moins 6 caractères.</div>
+               <input type="password" id="registerPassword" name="mot_de_passe" class="form-control fctrl" placeholder="Minimum 8 caractères" required minlength="8" />
+               <div class="invalid-feedback">Le mot de passe doit contenir au moins 8 caractères.</div>
+            </div>
+            <div class="mb-4">
+               <label class="flbl">Confirmez le mot de passe *</label>
+               <input type="password" id="registerConfirmPassword" name="confirmation" class="form-control fctrl" placeholder="Confirmez votre mot de passe" required minlength="8" />
+               <div class="invalid-feedback">Veuillez confirmer votre mot de passe.</div>
             </div>
             
             <button type="submit" class="btn-red mb-3 d-flex align-items-center gap-2">
