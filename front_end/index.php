@@ -400,24 +400,24 @@ $latestRecipes = $pdo->query(
                <div class="col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
                   <div class="chcard">
                      <div class="chimg">
-                        <img src="img/chefs/1.jpg" alt=""/>
+                        <img src="img/chefs/keith.jpg" alt=""/>
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Aïssatou</div>
+                        <div class="chnm">Keith SONON</div>
                         <div class="chrole">Collectrice de recettes</div>
-                        <div class="chexp">Grand-mère béninoise</div>
+                        <div class="chexp">cheffe de cuisine</div>
                      </div>
                   </div>
                </div>
                <div class="col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="80">
                   <div class="chcard">
                      <div class="chimg">
-                        <img src="img/chefs/2.jpg" alt=""/>
+                        <img src="img/chefs/chef.jpg" alt=""/>
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Moussa</div>
+                        <div class="chnm">Georginia Viou</div>
                         <div class="chrole">Expert en sauces</div>
                         <div class="chexp">20 ans de cuisine</div>
                      </div>
@@ -426,11 +426,11 @@ $latestRecipes = $pdo->query(
                <div class="col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="160">
                   <div class="chcard">
                      <div class="chimg">
-                        <img src="img/chefs/3.jpg" alt=""/>
+                        <img src="img/chefs/delphin.webp" alt=""/>
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Fatou</div>
+                        <div class="chnm">Delphin Agbetogan</div>
                         <div class="chrole">Spécialiste desserts</div>
                         <div class="chexp">15 ans de tradition</div>
                      </div>
@@ -439,11 +439,11 @@ $latestRecipes = $pdo->query(
                <div class="col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="240">
                   <div class="chcard">
                      <div class="chimg">
-                        <img src="img/chefs/4.jpg" alt=""/>
+                        <img src="img/chefs/eden.jpg" alt=""/>
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Koffi</div>
+                        <div class="chnm">Eden Food</div>
                         <div class="chrole">Animateur culinaire</div>
                         <div class="chexp">Cuisine du terroir</div>
                      </div>
