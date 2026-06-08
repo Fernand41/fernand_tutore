@@ -109,19 +109,19 @@ $nbTotal   = (int) $pdo->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn
 <!-- Stats rapides -->
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
-        <div class="card border-0 shadow-sm text-center py-3">
+        <div class="card border-0 shadow-sm text-center py-3 bg-primary-subtle">
             <div class="fs-2 fw-bold text-primary"><?= $nbTotal ?></div>
             <div class="text-muted small">Total inscrits</div>
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="card border-0 shadow-sm text-center py-3">
+        <div class="card border-0 shadow-sm text-center py-3 bg-success-subtle">
             <div class="fs-2 fw-bold text-success"><?= $nbActifs ?></div>
             <div class="text-muted small">Comptes actifs</div>
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="card border-0 shadow-sm text-center py-3">
+        <div class="card border-0 shadow-sm text-center py-3 bg-danger-subtle">
             <div class="fs-2 fw-bold text-danger"><?= $nbAdmins ?></div>
             <div class="text-muted small">Administrateurs</div>
         </div>

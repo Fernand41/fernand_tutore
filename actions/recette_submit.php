@@ -9,6 +9,14 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../config/database.php';
 
+// Debug: enregistrer état POST et session pour investigation
+@file_put_contents(__DIR__ . '/../tests/debug_recette_submit.log', "--- " . date('c') . " ---\n" . print_r([
+    'POST' => $_POST,
+    'FILES' => isset($_FILES) ? array_map(fn($f)=>['name'=>$f['name'],'error'=>$f['error'],'size'=>$f['size']??0], $_FILES) : [],
+    'SESSION_user_id' => $_SESSION['user_id'] ?? null,
+    'SESSION_csrf' => $_SESSION['csrf_token'] ?? null,
+], true), FILE_APPEND);
+
 // Accepter uniquement POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../front_end/soumettre-recette.php');
@@ -62,6 +70,7 @@ if ($temps_prep <= 0) {
 }
 
 if (!empty($erreurs)) {
+    @file_put_contents(__DIR__ . '/../tests/debug_recette_submit.log', "Validation errors: " . implode(' | ', $erreurs) . "\n", FILE_APPEND);
     setFlash('danger', implode('<br>', $erreurs));
     header('Location: ../front_end/soumettre-recette.php');
     exit;
@@ -75,6 +84,7 @@ try {
     $catStmt = $pdo->prepare("SELECT id FROM categories_recettes WHERE id = ?");
     $catStmt->execute([$id_categorie]);
     if (!$catStmt->fetch()) {
+        @file_put_contents(__DIR__ . '/../tests/debug_recette_submit.log', "Categorie invalide: {$id_categorie}\n", FILE_APPEND);
         setFlash('danger', 'La catégorie choisie est invalide.');
         header('Location: ../front_end/soumettre-recette.php');
         exit;
@@ -161,21 +171,23 @@ while (true) {
 
 // ── Insertion en BDD ──────────────────────────
 try {
-    $stmt = $pdo->prepare("
-        INSERT INTO recettes
-            (titre, slug, description, ingredients, etapes, video_url, difficulte,
-             temps_prep, temps_cuisson, nb_personnes, image, id_categorie, id_auteur, statut)
-        VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
-    ");
+    $stmt = $pdo->prepare(<<<'SQL'
+INSERT INTO recettes
+    (titre, slug, description, ingredients, etapes, difficulte,
+     temps_prep, temps_cuisson, nb_personnes, image, id_categorie, id_auteur, statut)
+VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
+SQL
+    );
 
     $stmt->execute([
-        $titre, $slug, $description, $ingredients, $etapes, $video_url, $difficulte,
+        $titre, $slug, $description, $ingredients, $etapes, $difficulte,
         $temps_prep, $temps_cuisson, $nb_personnes,
         $imageFilename,
         $id_categorie,
         currentUserId(),
     ]);
+    @file_put_contents(__DIR__ . '/../tests/debug_recette_submit.log', "Insertion OK: titre={$titre} id_categorie={$id_categorie}\n", FILE_APPEND);
 
 } catch (PDOException $e) {
     // Supprimer l'image uploadée si l'insertion échoue
@@ -183,6 +195,7 @@ try {
         @unlink(__DIR__ . '/../uploads/recettes/' . $imageFilename);
     }
     error_log('[recette_submit] Erreur insertion : ' . $e->getMessage());
+    @file_put_contents(__DIR__ . '/../tests/debug_recette_submit.log', "PDOException: " . $e->getMessage() . "\n", FILE_APPEND);
     setFlash('danger', 'Une erreur est survenue lors de la soumission. Veuillez réessayer.');
     header('Location: ../front_end/soumettre-recette.php');
     exit;

@@ -197,7 +197,7 @@ $nbPages = max(1, (int) ceil($total / $parPage));
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm h-100 bg-info-subtle">
             <div class="card-body">
                 <div class="d-flex align-items-center gap-3">
                     <div class="rounded-circle bg-info bg-opacity-10 p-3">
@@ -212,7 +212,7 @@ $nbPages = max(1, (int) ceil($total / $parPage));
         </div>
     </div>
     <div class="col-12 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm h-100 bg-warning-subtle">
             <div class="card-body">
                 <div class="d-flex align-items-center gap-3">
                     <div class="rounded-circle bg-warning bg-opacity-10 p-3">
@@ -227,7 +227,7 @@ $nbPages = max(1, (int) ceil($total / $parPage));
         </div>
     </div>
     <div class="col-12 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm h-100 bg-success-subtle">
             <div class="card-body">
                 <div class="d-flex align-items-center gap-3">
                     <div class="rounded-circle bg-success bg-opacity-10 p-3">

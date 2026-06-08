@@ -103,9 +103,46 @@ require_once __DIR__ . '/../includes/session.php';
             color: #ff8787 !important;
             border-radius: 10px;
          }
+         .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            color: #fff;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 14px rgba(232, 40, 26, 0.35);
+            transition: all 0.25s ease;
+            z-index: 999;
+         }
+         .back-home-btn i {
+            font-size: 0.8rem;
+            transition: transform 0.25s ease;
+         }
+         .back-home-btn:hover {
+            background: #c0180f;
+            border-color: #c0180f;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(232, 40, 26, 0.45);
+         }
+         .back-home-btn:hover i {
+            transform: translateX(-3px);
+         }
       </style>
    </head>
    <body>
+      <a href="index.php" class="back-home-btn">
+         <i class="fas fa-arrow-left"></i>
+         <span>Retour à l'accueil</span>
+      </a>
       <div class="login-card">
          <div class="blogo">
             <div class="bico"><i class="fas fa-leaf"></i></div>
@@ -130,13 +167,6 @@ require_once __DIR__ . '/../includes/session.php';
                <label class="flbl">Mot de passe *</label>
                <input type="password" id="loginPassword" name="mot_de_passe" class="form-control fctrl" placeholder="••••••••" required />
                <div class="invalid-feedback">Veuillez entrer votre mot de passe.</div>
-            </div>
-
-            <div class="form-check text-white mb-3">
-               <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
-               <label class="form-check-label" for="rememberMe">
-                  Se souvenir de moi
-               </label>
             </div>
             
             <button type="submit" class="btn-red mb-3 d-flex align-items-center gap-2">

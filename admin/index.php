@@ -84,7 +84,7 @@ try {
 
    <!-- Recettes publiées -->
    <div class="col-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-0 shadow-sm h-100 bg-primary-subtle">
          <div class="card-body d-flex align-items-center gap-3">
             <div class="rounded-circle bg-success bg-opacity-10 p-3">
                <i class="bi bi-journal-richtext fs-3 text-success"></i>
@@ -105,7 +105,7 @@ try {
 
    <!-- Utilisateurs -->
    <div class="col-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-0 shadow-sm h-100 bg-success-subtle">
          <div class="card-body d-flex align-items-center gap-3">
             <div class="rounded-circle bg-primary bg-opacity-10 p-3">
                <i class="bi bi-people-fill fs-3 text-primary"></i>
@@ -123,7 +123,7 @@ try {
 
    <!-- Favoris -->
    <div class="col-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-0 shadow-sm h-100 bg-info-subtle">
          <div class="card-body d-flex align-items-center gap-3">
             <div class="rounded-circle bg-info bg-opacity-10 p-3">
                <i class="bi bi-heart-fill fs-3 text-info"></i>
@@ -141,7 +141,7 @@ try {
 
    <!-- Commentaires en attente -->
    <div class="col-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-0 shadow-sm h-100 bg-warning-subtle">
          <div class="card-body d-flex align-items-center gap-3">
             <div class="rounded-circle bg-warning bg-opacity-10 p-3">
                <i class="bi bi-chat-left-dots-fill fs-3 text-warning"></i>
@@ -159,7 +159,7 @@ try {
 
    <!-- Catégories + Note moyenne -->
    <div class="col-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-0 shadow-sm h-100 bg-danger-subtle">
          <div class="card-body d-flex align-items-center gap-3">
             <div class="rounded-circle bg-danger bg-opacity-10 p-3">
                <i class="bi bi-tags-fill fs-3 text-danger"></i>
