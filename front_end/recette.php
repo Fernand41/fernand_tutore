@@ -10,9 +10,10 @@ if ($slug === '' && $id === null) {
     exit;
 }
 
-$sql = 'SELECT r.*, c.nom AS categorie, c.slug AS categorie_slug
+$sql = 'SELECT r.*, c.nom AS categorie, c.slug AS categorie_slug, u.pseudo AS auteur, u.id AS auteur_id
         FROM recettes r
         JOIN categories_recettes c ON r.id_categorie = c.id
+        JOIN utilisateurs u ON r.id_auteur = u.id
         WHERE r.statut = "publie"';
 $params = [];
 if ($id !== null && $id > 0) {
@@ -30,10 +31,56 @@ if (!$recipe) {
     exit;
 }
 
+$loggedIn = isLoggedIn();
+$alreadyFavorited = false;
+$comments = [];
+$commentsCount = 0;
+$suggestions = [];
+$embedVideoUrl = null;
+
 function parseList(string $text): array {
     return array_filter(array_map('trim', preg_split('/[\r\n]+/', $text)), fn($item) => $item !== '');
 }
 
+function getYouTubeEmbedUrl(string $url): ?string {
+    if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/', $url, $matches)) {
+        return 'https://www.youtube.com/embed/' . $matches[1];
+    }
+    return null;
+}
+
+try {
+    if ($loggedIn) {
+        $favStmt = $pdo->prepare('SELECT id FROM favoris WHERE id_user = ? AND id_recette = ? LIMIT 1');
+        $favStmt->execute([currentUserId(), $recipe['id']]);
+        $alreadyFavorited = (bool) $favStmt->fetch();
+    }
+
+    $commentStmt = $pdo->prepare(
+        'SELECT c.*, COALESCE(u.pseudo, c.nom_utilisateur) AS auteur_nom
+         FROM commentaires c
+         LEFT JOIN utilisateurs u ON u.id = c.id_user
+         WHERE c.id_recette = ? AND c.statut = "publie"
+         ORDER BY c.date_creation DESC'
+    );
+    $commentStmt->execute([$recipe['id']]);
+    $comments = $commentStmt->fetchAll();
+    $commentsCount = count($comments);
+
+    $suggestStmt = $pdo->prepare(
+        'SELECT r.id, r.slug, r.titre, r.image, r.note_moyenne
+         FROM recettes r
+         WHERE r.statut = "publie" AND r.id != ? AND r.id_categorie = ?
+         ORDER BY r.note_moyenne DESC, r.date_creation DESC
+         LIMIT 4'
+    );
+    $suggestStmt->execute([$recipe['id'], $recipe['id_categorie']]);
+    $suggestions = $suggestStmt->fetchAll();
+} catch (PDOException $e) {
+    error_log('[recette] Erreur de chargement des données : ' . $e->getMessage());
+}
+
+$embedVideoUrl = !empty($recipe['video_url']) ? getYouTubeEmbedUrl($recipe['video_url']) : null;
 $ingredients = parseList($recipe['ingredients'] ?? '');
 $steps = parseList($recipe['etapes'] ?? '');
 $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg';
@@ -338,6 +385,7 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
       </style>
    </head>
    <body>
+      <?php displayFlash(); ?>
       <!-- ============================================================
          TOP BAR
          ============================================================ -->
@@ -389,7 +437,12 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                <div class="d-flex align-items-center gap-1">
                   <button id="navSearchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
                   <div id="nav-auth-btn-placeholder" class="d-flex align-items-center gap-1">
-                     <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php if (isLoggedIn()): ?>
+                        <a href="profil.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i><?= e(currentUserName() ?? 'Profil') ?></a>
+                        <a href="../actions/auth_logout.php" class="nav-link text-danger">Déconnexion</a>
+                     <?php else: ?>
+                        <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php endif; ?>
                   </div>
                </div>
             </div>
@@ -526,34 +579,47 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                   </div>
 
                   <!-- Video (YouTube) -->
-                  <div class="section-card d-none" id="videoSection">
-                     <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="fab fa-youtube text-danger me-2"></i>Tutoriel Vidéo</h3>
-                     <div class="video-container">
-                        <iframe id="videoIframe" src="" allowfullscreen></iframe>
+                  <?php if (!empty($embedVideoUrl)): ?>
+                     <div class="section-card" id="videoSection">
+                        <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="fab fa-youtube text-danger me-2"></i>Tutoriel Vidéo</h3>
+                        <div class="video-container">
+                           <iframe id="videoIframe" src="<?= e($embedVideoUrl) ?>" allowfullscreen></iframe>
+                        </div>
                      </div>
-                  </div>
+                  <?php endif; ?>
 
                   <!-- Comments & Ratings -->
                   <div class="section-card">
-                     <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="far fa-comments text-danger me-2"></i>Commentaires (<span id="commentsCount">0</span>)</h3>
+                     <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="far fa-comments text-danger me-2"></i>Commentaires (<span id="commentsCount"><?= (int) $commentsCount ?></span>)</h3>
                      <div id="commentsContainer">
-                        <!-- Injecté dynamiquement -->
+                        <?php if (!empty($comments)): ?>
+                           <?php foreach ($comments as $comment): ?>
+                              <div class="comment-item">
+                                 <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="comment-avatar"><?= strtoupper(substr(e($comment['auteur_nom'] ?? 'U'), 0, 1)) ?></div>
+                                    <div>
+                                       <h6 class="mb-1 fw-semibold"><?= e($comment['auteur_nom'] ?? 'Utilisateur') ?></h6>
+                                       <small class="text-muted"><?= date('d/m/Y H:i', strtotime($comment['date_creation'])) ?></small>
+                                    </div>
+                                 </div>
+                                 <p class="mb-0"><?= nl2br(e($comment['contenu'])) ?></p>
+                              </div>
+                           <?php endforeach; ?>
+                        <?php else: ?>
+                           <p class="text-muted">Aucun commentaire n'a encore été publié pour cette recette.</p>
+                        <?php endif; ?>
                      </div>
                   </div>
 
                   <!-- Add Comment Form -->
                   <div class="section-card">
                      <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="fas fa-pen-nib text-danger me-2"></i>Laisser un avis</h3>
-                     
-                     <div id="notConnectedAlert" class="alert alert-dark border-0 p-4 text-center">
-                        <p class="mb-3">Vous devez être connecté pour donner une note et écrire un commentaire.</p>
-                        <a href="login.php" class="btn btn-danger px-4">Se connecter</a>
-                     </div>
-
-                     <form id="commentForm" class="d-none">
-                        <div class="mb-4">
-                           <label class="form-label fw-bold mb-2">Votre note de satisfaction</label>
-                           <div>
+                     <?php if ($loggedIn): ?>
+                        <form method="POST" action="../actions/recette_comment.php">
+                           <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                           <input type="hidden" name="id_recette" value="<?= (int) $recipe['id'] ?>">
+                           <div class="mb-4">
+                              <label class="form-label fw-bold mb-2">Votre note de satisfaction</label>
                               <div class="rating-stars-input" id="ratingInput">
                                  <i class="far fa-star" data-val="1"></i>
                                  <i class="far fa-star" data-val="2"></i>
@@ -561,16 +627,21 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                                  <i class="far fa-star" data-val="4"></i>
                                  <i class="far fa-star" data-val="5"></i>
                               </div>
-                              <input type="hidden" id="selectedNote" value="0"/>
+                              <input type="hidden" name="note" id="selectedNote" value="0" required>
                            </div>
+                           <div class="mb-4">
+                              <label for="commentContent" class="form-label fw-bold">Votre commentaire</label>
+                              <textarea class="form-control" id="commentContent" name="contenu" rows="5" placeholder="Que pensez-vous de cette recette ? Partagez votre expérience avec la communauté !" required></textarea>
+                           </div>
+                           <div id="submitMessage" class="mb-3"></div>
+                           <button type="submit" class="btn btn-danger px-4 py-2" id="submitBtn"><i class="fas fa-paper-plane me-1"></i> Soumettre</button>
+                        </form>
+                     <?php else: ?>
+                        <div class="alert alert-dark border-0 p-4 text-center">
+                           <p class="mb-3">Vous devez être connecté pour donner une note et écrire un commentaire.</p>
+                           <a href="login.php" class="btn btn-danger px-4">Se connecter</a>
                         </div>
-                        <div class="mb-4">
-                           <label for="commentContent" class="form-label fw-bold">Votre commentaire</label>
-                           <textarea class="form-control" id="commentContent" rows="5" placeholder="Que pensez-vous de cette recette ? Partagez votre expérience avec la communauté !" required></textarea>
-                        </div>
-                        <div id="submitMessage" class="mb-3"></div>
-                        <button type="submit" class="btn btn-danger px-4 py-2" id="submitBtn"><i class="fas fa-paper-plane me-1"></i> Soumettre</button>
-                     </form>
+                     <?php endif; ?>
                   </div>
                </div>
 
@@ -579,9 +650,14 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                   <!-- Actions Widget -->
                   <div class="sidebar-widget text-center" data-aos="fade-up">
                      <h4 class="widget-title">Actions</h4>
-                     <button class="fav-btn-large mb-3" id="favBtn">
-                        <i class="far fa-heart"></i> <span>Ajouter aux Favoris</span>
-                     </button>
+                     <form method="POST" action="../actions/recette_favorite.php">
+                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <input type="hidden" name="id_recette" value="<?= (int) $recipe['id'] ?>">
+                        <button type="submit" class="fav-btn-large mb-3 <?= $alreadyFavorited ? 'active' : '' ?>">
+                           <i class="<?= $alreadyFavorited ? 'fas' : 'far' ?> fa-heart"></i>
+                           <span><?= $alreadyFavorited ? 'Retirer des favoris' : 'Ajouter aux Favoris' ?></span>
+                        </button>
+                     </form>
                      <div class="mt-4 pt-3 border-top">
                         <p class="small text-muted mb-2">Partager cette recette :</p>
                         <div class="d-flex justify-content-center gap-3">
@@ -597,10 +673,10 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                   <div class="sidebar-widget" data-aos="fade-up">
                      <h4 class="widget-title">Auteur</h4>
                      <div class="d-flex align-items-center gap-3">
-                        <div class="comment-avatar" id="authorAvatar">U</div>
+                        <div class="comment-avatar"><?= strtoupper(substr(e($recipe['auteur'] ?? 'U'), 0, 1)) ?></div>
                         <div>
-                           <h5 class="fw-bold mb-1" id="authorName">Utilisateur</h5>
-                           <span class="badge bg-dark" id="authorRole">Membre</span>
+                           <h5 class="fw-bold mb-1"><?= e($recipe['auteur'] ?? 'Utilisateur') ?></h5>
+                           <span class="badge bg-dark">Membre</span>
                         </div>
                      </div>
                      <p class="text-muted mt-3 small mb-0">Cette recette a été proposée par un membre passionné de la gastronomie béninoise.</p>
@@ -610,7 +686,20 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                   <div class="sidebar-widget" data-aos="fade-up">
                      <h4 class="widget-title">Top Recettes</h4>
                      <div id="suggestionsContainer">
-                        <!-- Injecté dynamiquement -->
+                        <?php if (!empty($suggestions)): ?>
+                           <?php foreach ($suggestions as $suggestion): ?>
+                              <?php $suggestImage = $suggestion['image'] ? 'uploads/recettes/' . $suggestion['image'] : 'img/menu/1.jpg'; ?>
+                              <a href="recette.php?slug=<?= e($suggestion['slug']) ?>" class="suggested-recipe-item text-decoration-none">
+                                 <img src="<?= e($suggestImage) ?>" class="suggested-recipe-img" alt="<?= e($suggestion['titre']) ?>">
+                                 <div>
+                                    <div class="suggested-recipe-title"><?= e($suggestion['titre']) ?></div>
+                                    <div class="suggested-recipe-stars text-muted"><i class="fas fa-star text-warning"></i> <?= round((float) $suggestion['note_moyenne'], 1) ?> / 5</div>
+                                 </div>
+                              </a>
+                           <?php endforeach; ?>
+                        <?php else: ?>
+                           <p class="text-muted mb-0">Aucune suggestion disponible pour le moment.</p>
+                        <?php endif; ?>
                      </div>
                   </div>
                </div>
@@ -694,5 +783,22 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             const ratingStars = document.querySelectorAll('#ratingInput i');
+             const noteInput = document.getElementById('selectedNote');
+             if (ratingStars.length && noteInput) {
+                 ratingStars.forEach(function(star) {
+                     star.addEventListener('click', function() {
+                         const value = Number(this.dataset.val || 0);
+                         noteInput.value = value;
+                         ratingStars.forEach(function(item) {
+                             item.classList.toggle('active', Number(item.dataset.val) <= value);
+                         });
+                     });
+                 });
+             }
+         });
+      </script>
    </body>
 </html>

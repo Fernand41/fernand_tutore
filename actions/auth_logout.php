@@ -7,12 +7,7 @@
 
 require_once __DIR__ . '/../includes/session.php';
 
-// Supprimer le cookie "remember me" s'il existe
-if (isset($_COOKIE['remember_token'])) {
-    setcookie('remember_token', '', time() - 3600, '/', '', false, true);
-    // En production : invalider aussi le token en BDD
-}
-
+clearRememberToken();
 logoutUser();
 
 // Rediriger vers login avec message de confirmation

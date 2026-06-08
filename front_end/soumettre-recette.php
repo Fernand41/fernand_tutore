@@ -98,6 +98,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
       </style>
    </head>
    <body>
+      <?php displayFlash(); ?>
       <!-- ============================================================
          TOP BAR
          ============================================================ -->
@@ -149,7 +150,12 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                <div class="d-flex align-items-center gap-1">
                   <button id="navSearchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
                   <div id="nav-auth-btn-placeholder" class="d-flex align-items-center gap-1">
-                     <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php if (isLoggedIn()): ?>
+                        <a href="profil.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i><?= e(currentUserName() ?? 'Profil') ?></a>
+                        <a href="../actions/auth_logout.php" class="nav-link text-danger">Déconnexion</a>
+                     <?php else: ?>
+                        <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php endif; ?>
                   </div>
                </div>
             </div>
@@ -284,6 +290,15 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                               <div class="form-group">
                                  <label for="recipeStepsInput" class="form-label-custom">Étapes de préparation (une par ligne)</label>
                                  <textarea class="form-control form-control-custom" id="recipeStepsInput" name="etapes" rows="8" placeholder="Écraser les tomates et les oignons.&#10;Faire cuire le mélange dans une casserole.&#10;Ajouter l'eau de cuisson et les poissons." required></textarea>
+                              </div>
+                           </div>
+
+                           <!-- Vidéo YouTube -->
+                           <div class="col-12">
+                              <div class="form-group">
+                                 <label for="recipeVideoInput" class="form-label-custom">URL vidéo YouTube</label>
+                                 <input type="url" class="form-control form-control-custom" id="recipeVideoInput" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+                                 <small class="text-muted">Optionnel : lien vers une vidéo de préparation.</small>
                               </div>
                            </div>
 

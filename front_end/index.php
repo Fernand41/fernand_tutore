@@ -3,7 +3,13 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/session.php';
 $pdo = Database::getInstance();
 
-$categories = $pdo->query('SELECT id, nom, slug FROM categories_recettes ORDER BY nom')->fetchAll();
+$categories = $pdo->query('
+    SELECT c.id, c.nom, c.slug, COUNT(r.id) AS nb_recettes
+    FROM categories_recettes c
+    LEFT JOIN recettes r ON r.id_categorie = c.id AND r.statut = "publie"
+    GROUP BY c.id, c.nom, c.slug
+    ORDER BY c.nom
+')->fetchAll();
 $latestRecipes = $pdo->query(
     'SELECT r.id, r.slug, r.titre, r.description, r.image, c.nom AS categorie
      FROM recettes r
@@ -223,24 +229,34 @@ $latestRecipes = $pdo->query(
                <div class="sline"></div>
                <p class="sdesc mx-auto" style="max-width:480px;">Découvrez les saveurs béninoises organisées par catégories. Chaque recette raconte une histoire</p>
             </div>
-            <div class="row g-3 justify-content-center">
+            <?php
+            $catImages = [
+               'plats-principaux' => 'img/menu/2.jpg',
+               'soupes-sauces'    => 'img/menu/2.jpeg',
+               'entrees'          => 'img/menu/entre.jpeg',
+               'desserts'         => 'img/menu/desser.jpg',
+               'boissons'         => 'img/menu/boisson.webp',
+               'collations'       => 'img/menu/collation.jpg',
+            ];
+            ?>
+            <div class="cat-row justify-content-center" data-aos="fade-up">
                <?php if (!empty($categories)): ?>
-                   <?php foreach ($categories as $categorie): ?>
-                      <div class="col-sm-6 col-lg-4" data-aos="fade-up">
-                         <div class="category-card rounded-4 overflow-hidden shadow-sm text-center p-4 bg-white h-100">
-                            <div class="cat-thumb mb-3">
-                               <img src="img/menu/1.jpg" alt="<?= e($categorie['nom']) ?>" class="img-fluid rounded-4"/>
-                            </div>
-                            <h5 class="mb-2"><?= e($categorie['nom']) ?></h5>
-                            <p class="text-muted small">Explorez les recettes de cette catégorie.</p>
-                            <a href="recettes.php?categorie=<?= e($categorie['slug']) ?>" class="btn btn-outline-danger btn-sm mt-2">Voir les recettes</a>
-                         </div>
-                      </div>
-                   <?php endforeach; ?>
+                  <?php foreach ($categories as $i => $categorie): ?>
+                     <?php
+                        $imgSrc = $catImages[$categorie['slug']] ?? 'img/menu/1.jpg';
+                        $nb     = (int) $categorie['nb_recettes'];
+                        $label  = $nb . ' recette' . ($nb > 1 ? 's' : '');
+                     ?>
+                     <a href="recettes.php?categorie=<?= e($categorie['slug']) ?>"
+                        class="catcard <?= $i < 2 ? 'active' : '' ?>"
+                        data-aos="fade-up" data-aos-delay="<?= $i * 60 ?>">
+                        <img src="<?= e($imgSrc) ?>" alt="<?= e($categorie['nom']) ?>" class="catimg"/>
+                        <div class="catnm"><?= e($categorie['nom']) ?></div>
+                        <div class="catct"><?= $label ?></div>
+                     </a>
+                  <?php endforeach; ?>
                <?php else: ?>
-                  <div class="col-12 text-center">
-                     <p>Aucune catégorie disponible pour le moment.</p>
-                  </div>
+                  <p class="text-center w-100">Aucune catégorie disponible pour le moment.</p>
                <?php endif; ?>
             </div>
          </div>
@@ -404,9 +420,9 @@ $latestRecipes = $pdo->query(
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Keith SONON</div>
+                        <div class="chnm">keith SONON</div>
                         <div class="chrole">Collectrice de recettes</div>
-                        <div class="chexp">cheffe de cuisine</div>
+                        <div class="chexp">Grand-mère béninoise</div>
                      </div>
                   </div>
                </div>
@@ -430,7 +446,7 @@ $latestRecipes = $pdo->query(
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Delphin Agbetogan</div>
+                        <div class="chnm">Delphin Agbetorgan</div>
                         <div class="chrole">Spécialiste desserts</div>
                         <div class="chexp">15 ans de tradition</div>
                      </div>
@@ -443,7 +459,7 @@ $latestRecipes = $pdo->query(
                         <div class="chsoc"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
                      </div>
                      <div class="chbody">
-                        <div class="chnm">Eden Food</div>
+                        <div class="chnm">eden</div>
                         <div class="chrole">Animateur culinaire</div>
                         <div class="chexp">Cuisine du terroir</div>
                      </div>

@@ -90,6 +90,7 @@ function loginUser(array $user): void {
  * Déconnecte l'utilisateur et détruit la session.
  */
 function logoutUser(): void {
+    clearRememberToken();
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
         $p = session_get_cookie_params();
@@ -98,6 +99,116 @@ function logoutUser(): void {
         );
     }
     session_destroy();
+}
+
+/**
+ * Retourne le jeton de rappel depuis le cookie, s'il existe.
+ */
+function getRememberToken(): ?string {
+    return $_COOKIE['remember_token'] ?? null;
+}
+
+/**
+ * Charge l'utilisateur depuis le token de rappel en base de données.
+ */
+function loadRememberedUser(): void {
+    if (isLoggedIn()) {
+        return;
+    }
+
+    $token = getRememberToken();
+    if (empty($token)) {
+        return;
+    }
+
+    require_once __DIR__ . '/../config/database.php';
+
+    try {
+        $pdo = Database::getInstance();
+        $stmt = $pdo->prepare(
+            'SELECT u.id, u.pseudo, u.email, u.role
+             FROM remember_tokens rt
+             JOIN utilisateurs u ON u.id = rt.id_user
+             WHERE rt.token_hash = ? AND rt.date_expiration > NOW()
+             LIMIT 1'
+        );
+        $stmt->execute([hash('sha256', $token)]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            loginUser($user);
+        }
+    } catch (PDOException $e) {
+        error_log('[session] Impossible de charger remember_token : ' . $e->getMessage());
+    }
+}
+
+/**
+ * Enregistre un token de rappel en base de données et en cookie.
+ */
+function rememberUser(int $userId): void {
+    require_once __DIR__ . '/../config/database.php';
+
+    try {
+        $pdo = Database::getInstance();
+        $token = bin2hex(random_bytes(32));
+        $hash  = hash('sha256', $token);
+        $expires = new DateTime('+30 days');
+
+        $pdo->prepare('DELETE FROM remember_tokens WHERE id_user = ?')->execute([$userId]);
+        $stmt = $pdo->prepare(
+            'INSERT INTO remember_tokens (id_user, token_hash, ip, user_agent, date_expiration)
+             VALUES (?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([
+            $userId,
+            $hash,
+            $_SERVER['REMOTE_ADDR'] ?? null,
+            substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255),
+            $expires->format('Y-m-d H:i:s'),
+        ]);
+
+        $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        setcookie('remember_token', $token, [
+            'expires' => $expires->getTimestamp(),
+            'path' => '/',
+            'domain' => $_SERVER['HTTP_HOST'] ?? '',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    } catch (PDOException $e) {
+        error_log('[session] Impossible de créer remember_token : ' . $e->getMessage());
+    }
+}
+
+/**
+ * Supprime le cookie et le token de rappel de la base.
+ */
+function clearRememberToken(): void {
+    $token = getRememberToken();
+    if (!empty($token)) {
+        require_once __DIR__ . '/../config/database.php';
+        try {
+            $pdo = Database::getInstance();
+            $pdo->prepare('DELETE FROM remember_tokens WHERE token_hash = ?')->execute([hash('sha256', $token)]);
+        } catch (PDOException $e) {
+            error_log('[session] Impossible de supprimer remember_token : ' . $e->getMessage());
+        }
+    }
+
+    setcookie('remember_token', '', [
+        'expires' => time() - 3600,
+        'path' => '/',
+        'domain' => $_SERVER['HTTP_HOST'] ?? '',
+        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+// Charger l'utilisateur depuis le cookie "se souvenir de moi".
+if (!isLoggedIn()) {
+    loadRememberedUser();
 }
 
 // ──────────────────────────────────────────────

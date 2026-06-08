@@ -26,6 +26,7 @@ $titre         = trim($_POST['titre']         ?? '');
 $description   = trim($_POST['description']   ?? '');
 $ingredients   = trim($_POST['ingredients']   ?? '');
 $etapes        = trim($_POST['etapes']        ?? '');
+$video_url     = trim($_POST['video_url']     ?? '');
 $difficulte    = trim($_POST['difficulte']    ?? '');
 $temps_prep    = (int) ($_POST['temps_prep']    ?? 0);
 $temps_cuisson = (int) ($_POST['temps_cuisson'] ?? 0);
@@ -46,6 +47,9 @@ if (empty($ingredients)) {
 }
 if (empty($etapes)) {
     $erreurs[] = 'Les étapes de préparation sont obligatoires.';
+}
+if (!empty($video_url) && !filter_var($video_url, FILTER_VALIDATE_URL)) {
+    $erreurs[] = 'L’URL de la vidéo est invalide.';
 }
 if (empty($difficulte) || !in_array($difficulte, ['facile', 'moyen', 'difficile'])) {
     $erreurs[] = 'Veuillez choisir un niveau de difficulté.';
@@ -159,14 +163,14 @@ while (true) {
 try {
     $stmt = $pdo->prepare("
         INSERT INTO recettes
-            (titre, slug, description, ingredients, etapes, difficulte,
+            (titre, slug, description, ingredients, etapes, video_url, difficulte,
              temps_prep, temps_cuisson, nb_personnes, image, id_categorie, id_auteur, statut)
         VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
     ");
 
     $stmt->execute([
-        $titre, $slug, $description, $ingredients, $etapes, $difficulte,
+        $titre, $slug, $description, $ingredients, $etapes, $video_url, $difficulte,
         $temps_prep, $temps_cuisson, $nb_personnes,
         $imageFilename,
         $id_categorie,

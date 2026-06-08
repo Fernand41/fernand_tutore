@@ -96,7 +96,12 @@ $categories = $pdo->query('SELECT nom, slug FROM categories_recettes ORDER BY no
                   <!-- FIX 1: Search button -->
                   <button id="navSearchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
                   <div id="nav-auth-btn-placeholder" class="d-flex align-items-center gap-1">
-                     <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php if (isLoggedIn()): ?>
+                        <a href="profil.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i><?= e(currentUserName() ?? 'Profil') ?></a>
+                        <a href="../actions/auth_logout.php" class="nav-link text-danger">Déconnexion</a>
+                     <?php else: ?>
+                        <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php endif; ?>
                   </div>
                </div>
             </div>

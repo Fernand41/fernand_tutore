@@ -131,6 +131,13 @@ require_once __DIR__ . '/../includes/session.php';
                <input type="password" id="loginPassword" name="mot_de_passe" class="form-control fctrl" placeholder="••••••••" required />
                <div class="invalid-feedback">Veuillez entrer votre mot de passe.</div>
             </div>
+
+            <div class="form-check text-white mb-3">
+               <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+               <label class="form-check-label" for="rememberMe">
+                  Se souvenir de moi
+               </label>
+            </div>
             
             <button type="submit" class="btn-red mb-3 d-flex align-items-center gap-2">
                <i class="fas fa-sign-in-alt"></i> Se connecter

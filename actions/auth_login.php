@@ -35,9 +35,38 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+$ip = $_SERVER['REMOTE_ADDR'] ?? null;
+
+/**
+ * Enregistre une tentative de connexion.
+ */
+function recordLoginAttempt(PDO $pdo, ?string $email, ?string $ip, bool $success): void {
+    $stmt = $pdo->prepare('INSERT INTO login_attempts (email, ip, reussite) VALUES (?, ?, ?)');
+    $stmt->execute([$email, $ip, $success ? 1 : 0]);
+}
+
+/**
+ * Vérifie si l'IP et l'email ont trop de tentatives échouées récentes.
+ */
+function tooManyLoginAttempts(PDO $pdo, ?string $email, ?string $ip): bool {
+    $stmt = $pdo->prepare(
+        'SELECT COUNT(*) FROM login_attempts
+         WHERE email = ? AND ip = ? AND reussite = 0
+           AND date_creation > DATE_SUB(NOW(), INTERVAL 15 MINUTE)'
+    );
+    $stmt->execute([$email, $ip]);
+    return (int) $stmt->fetchColumn() >= 5;
+}
+
 // ── Recherche en BDD ──────────────────────────
 try {
     $pdo  = Database::getInstance();
+    if (tooManyLoginAttempts($pdo, $email, $ip)) {
+        setFlash('danger', 'Trop de tentatives de connexion. Retentez dans 15 minutes.');
+        header('Location: ../front_end/login.php');
+        exit;
+    }
+
     $stmt = $pdo->prepare("SELECT id, pseudo, email, mot_de_passe, role FROM utilisateurs WHERE email = ? LIMIT 1");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
@@ -50,19 +79,20 @@ try {
 
 // ── Vérification mot de passe ─────────────────
 if (!$user || !password_verify($mot_de_passe, $user['mot_de_passe'])) {
+    recordLoginAttempt($pdo, $email, $ip, false);
     setFlash('danger', 'Email ou mot de passe incorrect.');
     header('Location: ../front_end/login.php');
     exit;
 }
+
+recordLoginAttempt($pdo, $email, $ip, true);
 
 // ── Connexion réussie ─────────────────────────
 loginUser($user);
 
 // Cookie "se souvenir de moi" (30 jours)
 if ($remember) {
-    $token = bin2hex(random_bytes(32));
-    setcookie('remember_token', $token, time() + (30 * 24 * 3600), '/', '', false, true);
-    // En production : stocker $token hashé en BDD lié à l'utilisateur
+    rememberUser((int) $user['id']);
 }
 
 setFlash('success', 'Bienvenue, ' . e($user['pseudo']) . ' !');

@@ -10,13 +10,19 @@ $userEmail = $_SESSION['user_email'] ?? '';
 $userRole  = currentUserRole() ?? 'Membre';
 
 $favorites = [];
+$myRecipes = [];
 try {
-    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE f.id_user = ? AND r.statut = "publie" ORDER BY f.date_ajout DESC LIMIT 6');
+    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image, r.statut FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE f.id_user = ? AND r.statut = "publie" ORDER BY f.date_ajout DESC LIMIT 6');
     $stmt->execute([currentUserId()]);
     $favorites = $stmt->fetchAll();
+
+    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image, r.statut FROM recettes r WHERE r.id_auteur = ? ORDER BY r.date_creation DESC LIMIT 8');
+    $stmt->execute([currentUserId()]);
+    $myRecipes = $stmt->fetchAll();
 } catch (Exception $e) {
     // Si la table favoris n'existe pas ou qu'il y a une erreur, on ignore.
     $favorites = [];
+    $myRecipes = [];
 }
 ?>
 <!DOCTYPE html>
@@ -75,6 +81,7 @@ try {
       </style>
    </head>
    <body>
+      <?php displayFlash(); ?>
       <!-- ============================================================
          TOP BAR
          ============================================================ -->
@@ -126,7 +133,12 @@ try {
                <div class="d-flex align-items-center gap-1">
                   <button id="navSearchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
                   <div id="nav-auth-btn-placeholder" class="d-flex align-items-center gap-1">
-                     <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php if (isLoggedIn()): ?>
+                        <a href="profil.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i><?= e(currentUserName() ?? 'Profil') ?></a>
+                        <a href="../actions/auth_logout.php" class="nav-link text-danger">Déconnexion</a>
+                     <?php else: ?>
+                        <a href="login.php" class="nav-link nav-cta"><i class="fas fa-user me-1"></i>Connexion</a>
+                     <?php endif; ?>
                   </div>
                </div>
             </div>
@@ -223,6 +235,37 @@ try {
                            </div>
                         <?php endif; ?>
                      </div>
+                  </div>
+
+                  <div class="bg-white rounded-4 p-4 p-sm-5 shadow-sm border border-light mt-4">
+                     <h3 class="fw-bold mb-4" style="color: var(--dark);"><i class="fas fa-book text-danger me-2"></i>Mes recettes soumises</h3>
+                     <?php if (!empty($myRecipes)): ?>
+                        <div class="row g-4">
+                           <?php foreach ($myRecipes as $recipe): ?>
+                              <?php $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg'; ?>
+                              <div class="col-md-6">
+                                 <div class="card border-0 shadow-sm">
+                                    <img src="<?= e($recipeImage) ?>" class="card-img-top" alt="<?= e($recipe['titre']) ?>" style="height:180px;object-fit:cover;"/>
+                                    <div class="card-body">
+                                       <h6 class="fw-semibold mb-2"><?= e($recipe['titre']) ?></h6>
+                                       <p class="small text-muted mb-2">Statut : <?= e(ucfirst($recipe['statut'])) ?></p>
+                                       <div class="d-flex gap-2 flex-wrap">
+                                          <a href="recette.php?id=<?= (int) $recipe['id'] ?>" class="btn btn-outline-danger btn-sm">Voir</a>
+                                          <a href="modifier-recette.php?id=<?= (int) $recipe['id'] ?>" class="btn btn-danger btn-sm">Modifier</a>
+                                          <form action="../actions/recette_delete.php" method="POST" class="d-inline">
+                                             <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                                             <input type="hidden" name="id_recette" value="<?= (int) $recipe['id'] ?>">
+                                             <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="return confirm('Supprimer cette recette ?');">Supprimer</button>
+                                          </form>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           <?php endforeach; ?>
+                        </div>
+                     <?php else: ?>
+                        <p class="text-muted">Vous n'avez encore soumis aucune recette.</p>
+                     <?php endif; ?>
                   </div>
                </div>
             </div>
