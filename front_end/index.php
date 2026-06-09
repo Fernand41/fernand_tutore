@@ -807,7 +807,7 @@ $latestRecipes = $pdo->query(
                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
                   <div class="blcard">
                      <div class="blimg">
-                        <img src="img/blog/1.jpg" alt=""/>
+                        <img src="img/blog/sauce_graine.jpeg" alt=""/>
                         <div class="bldatebdg"><span class="bd">14</span><span class="bm">Mar</span></div>
                      </div>
                      <div class="blbody">
@@ -821,7 +821,7 @@ $latestRecipes = $pdo->query(
                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="80">
                   <div class="blcard">
                      <div class="blimg">
-                        <img src="img/blog/2.jpg" alt=""/>
+                        <img src="img/blog/aloko.jpeg" alt=""/>
                         <div class="bldatebdg"><span class="bd">28</span><span class="bm">Fév</span></div>
                      </div>
                      <div class="blbody">
@@ -835,7 +835,7 @@ $latestRecipes = $pdo->query(
                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="160">
                   <div class="blcard">
                      <div class="blimg">
-                        <img src="img/blog/3.jpg" alt=""/>
+                        <img src="img/blog/abaara.jpeg" alt=""/>
                         <div class="bldatebdg"><span class="bd">05</span><span class="bm">Jan</span></div>
                      </div>
                      <div class="blbody">

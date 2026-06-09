@@ -50,9 +50,29 @@ try {
       <style>
          .profile-header {
             position: relative;
-            padding: 120px 0 60px 0;
-            background: linear-gradient(135deg, var(--dark), #151515);
+            overflow: hidden;
+            padding: 140px 0 80px 0;
             color: #fff;
+         }
+         .profile-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1500&q=80') center / cover no-repeat;
+            filter: blur(5px) brightness(0.55);
+            transform: scale(1.05);
+            z-index: 1;
+         }
+         .profile-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.1), rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.8));
+            z-index: 2;
+         }
+         .profile-header .container {
+            position: relative;
+            z-index: 3;
          }
          .profile-card {
             background: #fff;

@@ -31,9 +31,29 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
       <style>
          .submit-header {
             position: relative;
+            overflow: hidden;
             padding: 120px 0 60px 0;
-            background: linear-gradient(135deg, var(--dark), #151515);
             color: #fff;
+         }
+         .submit-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1500&q=80') center / cover no-repeat;
+            filter: blur(5px) brightness(0.55);
+            transform: scale(1.05);
+            z-index: 1;
+         }
+         .submit-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.08), rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.85));
+            z-index: 2;
+         }
+         .submit-header .container {
+            position: relative;
+            z-index: 3;
          }
          .form-card {
             background: #fff;
