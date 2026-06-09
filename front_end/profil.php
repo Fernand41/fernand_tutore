@@ -238,7 +238,7 @@ try {
                      <div class="row g-4" id="favoritesGrid">
                         <?php if (!empty($favorites)): ?>
                            <?php foreach ($favorites as $favorite): ?>
-                              <?php $favImage = $favorite['image'] ? 'uploads/recettes/' . $favorite['image'] : 'img/menu/1.jpg'; ?>
+                              <?php $favImage = $favorite['image'] ? '../uploads/recettes/' . $favorite['image'] : 'img/menu/1.jpg'; ?>
                               <div class="col-md-6">
                                  <div class="card border-0 shadow-sm">
                                     <img src="<?= e($favImage) ?>" class="card-img-top" alt="<?= e($favorite['titre']) ?>" style="height:180px;object-fit:cover;"/>
@@ -262,7 +262,7 @@ try {
                      <?php if (!empty($myRecipes)): ?>
                         <div class="row g-4">
                            <?php foreach ($myRecipes as $recipe): ?>
-                              <?php $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg'; ?>
+                              <?php $recipeImage = $recipe['image'] ? '../uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg'; ?>
                               <div class="col-md-6">
                                  <div class="card border-0 shadow-sm">
                                     <img src="<?= e($recipeImage) ?>" class="card-img-top" alt="<?= e($recipe['titre']) ?>" style="height:180px;object-fit:cover;"/>
@@ -270,8 +270,12 @@ try {
                                        <h6 class="fw-semibold mb-2"><?= e($recipe['titre']) ?></h6>
                                        <p class="small text-muted mb-2">Statut : <?= e(ucfirst($recipe['statut'])) ?></p>
                                        <div class="d-flex gap-2 flex-wrap">
-                                          <a href="recette.php?id=<?= (int) $recipe['id'] ?>" class="btn btn-outline-danger btn-sm">Voir</a>
-                                          <a href="modifier-recette.php?id=<?= (int) $recipe['id'] ?>" class="btn btn-danger btn-sm">Modifier</a>
+                                          <?php if ($recipe['statut'] === 'publie'): ?>
+                                             <a href="recette.php?slug=<?= e($recipe['slug']) ?>" class="btn btn-outline-danger btn-sm">Voir</a>
+                                          <?php else: ?>
+                                             <span class="btn btn-outline-secondary btn-sm disabled">En attente</span>
+                                          <?php endif; ?>
+                                          <a href="soumettre-recette.php?id=<?= (int) $recipe['id'] ?>" class="btn btn-danger btn-sm">Modifier</a>
                                           <form action="../actions/recette_delete.php" method="POST" class="d-inline">
                                              <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                                              <input type="hidden" name="id_recette" value="<?= (int) $recipe['id'] ?>">

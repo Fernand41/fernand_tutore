@@ -223,7 +223,7 @@ if (!$csrf) {
         'description' => 'Description test automatique',
         'ingredients' => 'Ingrédient A\nIngrédient B',
         'etapes' => 'Étape 1\nÉtape 2',
-        'video_url' => '',
+        'video_youtube' => '',
         'difficulte' => 'facile',
         'temps_prep' => 10,
         'temps_cuisson' => 5,

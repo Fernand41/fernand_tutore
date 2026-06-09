@@ -286,3 +286,39 @@ upsert note result: true | err: ["00000",null,null]
 avg stats: {"total":1,"average":"4.0"}
 update recette result: true | err: ["00000",null,null]
 commit ok
+--- 2026-06-09T21:17:24+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+            [id_recette] => 3
+            [note] => 0
+            [contenu] => j'aime cette recette que vous avez proposer 
+
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+)
+--- 2026-06-09T21:17:47+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+            [id_recette] => 3
+            [note] => 4
+            [contenu] => j'ai kiffé
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"4.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok

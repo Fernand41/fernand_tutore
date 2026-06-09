@@ -243,7 +243,7 @@ function displayFlash(): void {
     $flash = getFlash();
     if ($flash) {
         $type = htmlspecialchars($flash['type']);
-        $msg  = htmlspecialchars($flash['message']);
+        $msg  = strip_tags($flash['message'], '<br><strong><em><u><a>');
         echo <<<HTML
         <div class="alert alert-{$type} alert-dismissible fade show mx-3 mt-3" role="alert">
             {$msg}

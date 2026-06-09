@@ -199,7 +199,7 @@ $categories = $pdo->query('SELECT nom, slug FROM categories_recettes ORDER BY no
             <div class="row g-4" id="mgrid">
                <?php if (!empty($recettes)): ?>
                   <?php foreach ($recettes as $recette): ?>
-                     <?php $recipeImage = $recette['image'] ? 'uploads/recettes/' . $recette['image'] : 'img/menu/1.jpg'; ?>
+                     <?php $recipeImage = $recette['image'] ? '../uploads/recettes/' . $recette['image'] : 'img/menu/1.jpg'; ?>
                      <div class="col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm border-0">
                            <img src="<?= e($recipeImage) ?>" class="card-img-top" alt="<?= e($recette['titre']) ?>" style="height:220px;object-fit:cover;"/>

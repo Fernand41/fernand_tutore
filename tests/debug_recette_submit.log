@@ -204,3 +204,176 @@ Servir.
     [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
 )
 Insertion OK: titre=Recette test utilisateur id_categorie=1
+--- 2026-06-09T20:14:35+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 3f85491c47c69118efae08cfb7c88b5cff83fd5e6e73c12ea9164530286736e3
+            [titre] => Amiwô
+            [id_categorie] => 1
+            [description] => L'Amiwo (ou pâte rouge) est une recette traditionnelle emblématique du Bénin et du Togo, préparée à base de farine de maïs cuite dans un bouillon de viande relevé à la tomate.
+            [difficulte] => moyen
+            [temps_prep] => 40
+            [temps_cuisson] => 30
+            [portion] => 3
+            [ingredients] => 1 poulet entier découpé en morceaux
+2 cuillères à soupe de tomate concentrée
+3 tomates fraîches mixées ou concassées2 oignons émincés
+2 gousses d'ail et 1 morceau de gingembre écrasés
+Épices : poivre, sel, piment, et 
+2 feuilles de laurier1 cuillère à soupe de poudre de crevettes séchées
+350 g de farine de maïs
+3 cuillères à soupe d'huile de palme rouge (ou d'huile végétale)
+Le bouillon de cuisson du poulet filtré
+            [etapes] => Dans une casserole, faites dorer les oignons, l'ail et le gingembre dans un filet d'huile.
+Ajoutez les morceaux de poulet, la tomate concentrée, la purée de tomates fraîches, le laurier, le sel et le poivre.
+Versez environ 1 litre d'eau, couvrez et laissez mijoter 25 à 30 minutes jusqu'à ce que le poulet soit bien tendre.
+Retirez les morceaux de poulet. 
+Faites-les griller au four ou frire dans une poêle.
+Conservez précieusement le bouillon de cuisson dans la marmite
+Dans une poêle à sec et à feu doux, faites torréfier légèrement la farine de maïs pendant 10 à 15 minutes en remuant.
+Elle doit prendre une très légère couleur dorée et dégager un bon parfum de maïs grillé.
+Ajoutez l'huile de palme rouge et la poudre de crevettes dans votre bouillon chaud resté dans la marmite. Rectifiez l'assaisonnement si nécessaire.
+Dans un bol à part, prélevez 3 cuillères à soupe de farine de maïs torréfiée et délayez-les avec un peu d'eau froide.
+Versez ce mélange liquide dans le bouillon bouillant tout en remuant : cela forme une bouillie légère qui sert de base.
+Versez ensuite le reste de la farine de maïs en pluie, petit à petit, tout en remuant vigoureusement avec une spatule en bois.
+Réduisez le feu au minimum. Continuez de travailler la pâte contre les parois de la marmite pour éviter les grumeaux.
+Laissez cuire à l'étouffée à feu très doux pendant 10 minutes. La pâte doit devenir lisse, dense et se détacher des parois.
+            [video_url] => https://www.youtube.com/watch?v=L0bf6lCdWPc
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => pâte_rouge.jpg
+                    [error] => 0
+                    [size] => 86411
+                )
+
+        )
+
+    [SESSION_user_id] => 25
+    [SESSION_csrf] => 3f85491c47c69118efae08cfb7c88b5cff83fd5e6e73c12ea9164530286736e3
+)
+Insertion OK: titre=Amiwô id_categorie=1
+--- 2026-06-09T21:04:24+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 3f85491c47c69118efae08cfb7c88b5cff83fd5e6e73c12ea9164530286736e3
+            [return_to] => ../front_end/profil.php
+            [titre] => Atassi
+            [id_categorie] => 1
+            [description] => L’Atassi est un plat emblématique de la cuisine béninoise consistant en un mélange savoureux de riz et de haricots (souvent du niébé) cuits ensemble
+            [difficulte] => moyen
+            [temps_prep] => 60
+            [temps_cuisson] => 45
+            [portion] => 2
+            [ingredients] => 250g de riz
+250g d’haricots (j’ai fait 125g/125g)
+Environ 1.5 L d’eau
+Sel
+Pour accompagner : Des oeufs (ou du poulet et autres), du gari et du Dja !
+            [etapes] => Comme pour toutes les recettes qui nécessitent des haricots secs, il faut les laisser tremper plusieurs heures. Donc la veille de votre préparation, mettez vos haricots dans de l’eau. Ils doivent y rester au moins 8h. Si vous avez une cocotte-minute ou un autocuiseur, ce n’est pas la peine de les laisser tremper 😉 Vos haricots vont gonfler.
+Le lendemain, égouttez, rincez vos haricots et mettez-les dans une casserole.
+Versez l’eau. Ne salez pas encore.
+Couvrez et laissez cuire pendant 30/45 minutes.
+Pendant la cuisson des haricots, j’ai préparé des morceaux de poulet que j’ai lavé puis assaisonné de sel, poivre, ail en poudre et moutarde. Cuisson au four pendant 45/60 minutes à 180°
+Vos haricots doivent être presque cuits, assez tendres au toucher.
+C’est à ce moment que vous allez saler et ajouter le riz préalablement lavé.
+Couvrez et laissez mijoter jusqu’à ce que le riz soit totalement tendre ! Et voilà 🙂
+À consommer avec des œufs, un peu de gari et bien sûr avec du Dja, appelé aussi friture de tomates
+
+
+
+
+            [video_youtube] => https://www.youtube.com/watch?v=AYmAuvY_xeI
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => atassi.jpg
+                    [error] => 0
+                    [size] => 102251
+                )
+
+        )
+
+    [SESSION_user_id] => 25
+    [SESSION_csrf] => 3f85491c47c69118efae08cfb7c88b5cff83fd5e6e73c12ea9164530286736e3
+)
+Insertion OK: titre=Atassi id_categorie=1
+--- 2026-06-09T21:15:48+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+            [return_to] => ../front_end/profil.php
+            [titre] => Sauce Graine
+            [id_categorie] => 5
+            [description] => La sauce graine est un plat emblématique et riche d'Afrique de l'Ouest, particulièrement populaire en Côte d'Ivoire (notamment chez les peuples Akan et Krou), mais également très appréciée au Bénin, au Togo et au Ghana
+            [difficulte] => difficile
+            [temps_prep] => 120
+            [temps_cuisson] => 60
+            [portion] => 05
+            [ingredients] => 2 kgs de noix de palme
+2 kgs de mouton
+500 g de crabe
+1 Poisson fumé
+3 Oignons
+2 têtes d’Ail
+4 épices / Poivre blanc / Sel
+140 g de tomate concentrée
+            [etapes] => Lavez les noix de palme et les faire bouillir pendant 45 minutes. La noix va cuire et deviendra molle.
+Pendant ce temps, lavez la viande de mouton et mettez-la dans une casserole sur feu vif.
+Assaisonnez, mettez les gousses d’ail et laissez cuire 20 minutes puis réservez.
+Transvasez la viande dans un grand wok mais ne jetez surtout pas le jus de cuisson!
+Ajoutez un filet d’huile et faites dorer le tout pendant 10/15 minutes.
+La viande prendra une jolie couleur.
+Lavez les crabes : Enlevez la chair, gardez certaines carcasses, les pinces.
+Assaisonnez le tout et faites cuire à la poêle pendant 5 minutes. Réservez.
+Lavez le poisson fumé et prélevez toute la chair.
+Une fois les noix cuites, lavez-les.
+A l’aide d’un mortier, écrasez-les. Si vous n’en avez pas, faites comme Léonard et allez-y avec les mains!
+Faites attention c’est chaud!
+Prélevez toute l’huile présente dans les noix en conservant l’eau avec laquelle vous allez les rincer.
+Lavez et ajoutez de l’eau au fur et à mesure. Vous obtiendrez environ 4L de liquide.
+Mettez dans une grande marmite et faire bouillir pendant 1h30/2h. Dans un premier temps, mettez 3 L d’eau. Avec la cuisson, l’eau va réduire. Ajoutez l’eau restante une fois que votre casserole vous le permet!
+ Coupez les 3 oignons et mettez-les dans la sauce.
+Laissez bouillir une nouvelle fois
+Lorsque toute l’eau a été incorporée et que l’huile est bien présente à la surface, ajoutez la viande et mélangez.
+Ajoutez la tomate concentrée
+Ajustez l’assaisonnement et laissez cuire encore 20 minutes.
+Après ce temps, ajoutez 6 feuilles de laurier
+Couvrez la casserole et poursuivez la cuisson pendant encore 45/60 min.
+Ajoutez le poisson fumé, le crabe préalablement cuit et le jus de la viande que vous avez conservé!
+Poursuivez la cuisson une quinzaine de minutes sur feu doux.
+C’est prêt 🙂
+A déguster avec un délicieux foutou banane !
+
+
+
+            [video_youtube] => https://www.youtube.com/watch?v=tk8yxRYqZ8k
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => sauce_graine.jpeg
+                    [error] => 0
+                    [size] => 169794
+                )
+
+        )
+
+    [SESSION_user_id] => 26
+    [SESSION_csrf] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
+)
+Insertion OK: titre=Sauce Graine id_categorie=5

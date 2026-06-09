@@ -30,16 +30,16 @@ requireAuth('login.php');
 verifyCsrf('../front_end/soumettre-recette.php');
 
 // ── Récupérer les champs ──────────────────────
-$titre         = trim($_POST['titre']         ?? '');
-$description   = trim($_POST['description']   ?? '');
-$ingredients   = trim($_POST['ingredients']   ?? '');
-$etapes        = trim($_POST['etapes']        ?? '');
-$video_url     = trim($_POST['video_url']     ?? '');
-$difficulte    = trim($_POST['difficulte']    ?? '');
-$temps_prep    = (int) ($_POST['temps_prep']    ?? 0);
-$temps_cuisson = (int) ($_POST['temps_cuisson'] ?? 0);
-$nb_personnes  = (int) ($_POST['portion']       ?? 0);
-$id_categorie  = (int) ($_POST['id_categorie']  ?? 0);
+$titre          = trim($_POST['titre']          ?? '');
+$description    = trim($_POST['description']    ?? '');
+$ingredients    = trim($_POST['ingredients']    ?? '');
+$etapes         = trim($_POST['etapes']         ?? '');
+$video_youtube  = trim($_POST['video_youtube']  ?? '');
+$difficulte     = trim($_POST['difficulte']     ?? '');
+$temps_prep     = (int) ($_POST['temps_prep']     ?? 0);
+$temps_cuisson  = (int) ($_POST['temps_cuisson']  ?? 0);
+$nb_personnes   = (int) ($_POST['portion']        ?? 0);
+$id_categorie   = (int) ($_POST['id_categorie']   ?? 0);
 
 // ── Validations ───────────────────────────────
 $erreurs = [];
@@ -56,7 +56,7 @@ if (empty($ingredients)) {
 if (empty($etapes)) {
     $erreurs[] = 'Les étapes de préparation sont obligatoires.';
 }
-if (!empty($video_url) && !filter_var($video_url, FILTER_VALIDATE_URL)) {
+if (!empty($video_youtube) && !filter_var($video_youtube, FILTER_VALIDATE_URL)) {
     $erreurs[] = 'L’URL de la vidéo est invalide.';
 }
 if (empty($difficulte) || !in_array($difficulte, ['facile', 'moyen', 'difficile'])) {
@@ -174,9 +174,9 @@ try {
     $stmt = $pdo->prepare(<<<'SQL'
 INSERT INTO recettes
     (titre, slug, description, ingredients, etapes, difficulte,
-     temps_prep, temps_cuisson, nb_personnes, image, id_categorie, id_auteur, statut)
+     temps_prep, temps_cuisson, nb_personnes, image, video_youtube, id_categorie, id_auteur, statut)
 VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
 SQL
     );
 
@@ -184,6 +184,7 @@ SQL
         $titre, $slug, $description, $ingredients, $etapes, $difficulte,
         $temps_prep, $temps_cuisson, $nb_personnes,
         $imageFilename,
+        $video_youtube,
         $id_categorie,
         currentUserId(),
     ]);

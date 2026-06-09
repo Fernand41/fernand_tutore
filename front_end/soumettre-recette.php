@@ -5,6 +5,55 @@ requireAuth('login.php');
 
 $pdo = Database::getInstance();
 $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom")->fetchAll();
+
+$isEditMode = false;
+$currentImage = null;
+$recipe = [
+    'id' => 0,
+    'titre' => '',
+    'description' => '',
+    'ingredients' => '',
+    'etapes' => '',
+    'video_youtube' => '',
+    'difficulte' => 'moyen',
+    'temps_prep' => '',
+    'temps_cuisson' => '',
+    'nb_personnes' => '',
+    'id_categorie' => '',
+    'image' => null,
+];
+$formAction = '../actions/recette_submit.php';
+$submitLabel = 'Soumettre la recette';
+$pageTitle = 'Proposer une Recette';
+$pageHeading = 'Partager une Recette';
+$returnTo = '';
+
+if (isset($_GET['id']) && ($editId = (int) $_GET['id']) > 0) {
+    try {
+        $stmt = $pdo->prepare('SELECT * FROM recettes WHERE id = ? AND id_auteur = ? LIMIT 1');
+        $stmt->execute([$editId, currentUserId()]);
+        $data = $stmt->fetch();
+        if ($data) {
+            $recipe = $data;
+            $isEditMode = true;
+            $formAction = '../actions/recette_update.php';
+            $submitLabel = 'Enregistrer les modifications';
+            $pageTitle = 'Modifier une recette';
+            $pageHeading = 'Modifier la recette';
+            $currentImage = $recipe['image'] ? '../uploads/recettes/' . $recipe['image'] : null;
+            $returnTo = '../front_end/soumettre-recette.php?id=' . $editId;
+        } else {
+            setFlash('danger', 'Recette introuvable ou non autorisée.');
+            header('Location: profil.php');
+            exit;
+        }
+    } catch (PDOException $e) {
+        error_log('[soumettre-recette] Erreur BDD : ' . $e->getMessage());
+        setFlash('danger', 'Impossible de charger la recette.');
+        header('Location: profil.php');
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -14,7 +63,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="author" content="GoûtsBénin">
       <meta name="description" content="Partagez votre savoir-faire culinaire. Soumettez une recette béninoise sur Goûts du Bénin.">
-      <title>Proposer une Recette - GoûtsBénin</title>
+      <title><?= e($pageTitle) ?> - GoûtsBénin</title>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet"/>
       <!-- Bootstrap 5.3 -->
       <link href="css/bootstrap.min.css" rel="stylesheet"/>
@@ -109,6 +158,11 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
             left: 0;
             z-index: 2;
             display: none;
+         }
+         .img-preview-box.has-image i,
+         .img-preview-box.has-image span {
+            opacity: 0;
+            visibility: hidden;
          }
          .img-preview-box i {
             font-size: 2.5rem;
@@ -220,7 +274,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
          ============================================================ -->
       <section class="submit-header">
          <div class="container text-center">
-            <h1 class="display-5 fw-bold text-white">Partager une Recette</h1>
+            <h1 class="display-5 fw-bold text-white"><?= e($pageHeading) ?></h1>
             <p class="text-white-50">Publiez vos créations et faites découvrir les saveurs du Bénin au monde entier.</p>
          </div>
       </section>
@@ -235,14 +289,18 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                   <div class="form-card">
                      <h3 class="fw-bold mb-4" style="color: var(--dark);"><i class="fas fa-clipboard-list text-danger me-2"></i>Informations sur la recette</h3>
                      
-                     <form id="submitRecipeForm" action="../actions/recette_submit.php" method="POST" enctype="multipart/form-data">
+                     <form id="submitRecipeForm" action="<?= e($formAction) ?>" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <input type="hidden" name="return_to" value="<?= e($returnTo ?: '../front_end/profil.php') ?>">
+                        <?php if ($isEditMode): ?>
+                           <input type="hidden" name="id_recette" value="<?= (int) $recipe['id'] ?>">
+                        <?php endif; ?>
                         <div class="row g-4">
                            <!-- Titre -->
                            <div class="col-md-8">
                               <div class="form-group">
                                  <label for="recipeTitleInput" class="form-label-custom">Titre de la recette</label>
-                                 <input type="text" class="form-control form-control-custom" id="recipeTitleInput" name="titre" placeholder="Ex: Sauce Graine au poisson fumé" required>
+                                 <input type="text" class="form-control form-control-custom" id="recipeTitleInput" name="titre" value="<?= e($recipe['titre']) ?>" placeholder="Ex: Sauce Graine au poisson fumé" required>
                               </div>
                            </div>
 
@@ -251,9 +309,9 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                               <div class="form-group">
                                  <label for="recipeCategorySelect" class="form-label-custom">Catégorie</label>
                                  <select class="form-select form-control-custom" id="recipeCategorySelect" name="id_categorie" required>
-                                    <option value="" disabled selected>Choisir une catégorie</option>
+                                    <option value="" disabled <?= $recipe['id_categorie'] ? '' : 'selected' ?>>Choisir une catégorie</option>
                                     <?php foreach ($categories as $cat): ?>
-                                       <option value="<?= e($cat['id']) ?>"><?= e($cat['nom']) ?></option>
+                                       <option value="<?= e($cat['id']) ?>" <?= (int) $recipe['id_categorie'] === (int) $cat['id'] ? 'selected' : '' ?>><?= e($cat['nom']) ?></option>
                                     <?php endforeach; ?>
                                  </select>
                               </div>
@@ -263,7 +321,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <div class="col-12">
                               <div class="form-group">
                                  <label for="recipeDescInput" class="form-label-custom">Courte description</label>
-                                 <textarea class="form-control form-control-custom" id="recipeDescInput" name="description" rows="3" placeholder="Présentez brièvement l'histoire ou le goût de cette recette..." required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeDescInput" name="description" rows="3" placeholder="Présentez brièvement l'histoire ou le goût de cette recette..." required><?= e($recipe['description']) ?></textarea>
                               </div>
                            </div>
 
@@ -272,28 +330,28 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                               <div class="form-group">
                                  <label for="recipeDifficultySelect" class="form-label-custom">Difficulté</label>
                                  <select class="form-select form-control-custom" id="recipeDifficultySelect" name="difficulte" required>
-                                    <option value="facile">Facile</option>
-                                    <option value="moyen" selected>Moyen</option>
-                                    <option value="difficile">Difficile</option>
+                                    <option value="facile" <?= $recipe['difficulte'] === 'facile' ? 'selected' : '' ?>>Facile</option>
+                                    <option value="moyen" <?= $recipe['difficulte'] === 'moyen' ? 'selected' : '' ?>>Moyen</option>
+                                    <option value="difficile" <?= $recipe['difficulte'] === 'difficile' ? 'selected' : '' ?>>Difficile</option>
                                  </select>
                               </div>
                            </div>
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipePrepInput" class="form-label-custom">Temps prép (min)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipePrepInput" name="temps_prep" min="1" placeholder="Ex: 20" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipePrepInput" name="temps_prep" min="1" value="<?= (int) $recipe['temps_prep'] ?>" placeholder="Ex: 20" required>
                               </div>
                            </div>
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipeCookInput" class="form-label-custom">Temps cuisson (min)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipeCookInput" name="temps_cuisson" min="0" placeholder="Ex: 30" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipeCookInput" name="temps_cuisson" min="0" value="<?= (int) $recipe['temps_cuisson'] ?>" placeholder="Ex: 30" required>
                               </div>
                            </div>
                            <div class="col-md-3">
                               <div class="form-group">
                                  <label for="recipePortionsInput" class="form-label-custom">Portions (pers.)</label>
-                                 <input type="number" class="form-control form-control-custom" id="recipePortionsInput" name="portion" min="1" placeholder="Ex: 4" required>
+                                 <input type="number" class="form-control form-control-custom" id="recipePortionsInput" name="portion" min="1" value="<?= (int) $recipe['nb_personnes'] ?>" placeholder="Ex: 4" required>
                               </div>
                            </div>
 
@@ -301,7 +359,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="recipeIngredientsInput" class="form-label-custom">Ingrédients (un par ligne)</label>
-                                 <textarea class="form-control form-control-custom" id="recipeIngredientsInput" name="ingredients" rows="8" placeholder="500g de farine de maïs&#10;2 tomates fraîches&#10;1 oignon rouge&#10;Du poisson fumé" required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeIngredientsInput" name="ingredients" rows="8" placeholder="500g de farine de maïs&#10;2 tomates fraîches&#10;1 oignon rouge&#10;Du poisson fumé" required><?= e($recipe['ingredients']) ?></textarea>
                               </div>
                            </div>
 
@@ -309,7 +367,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="recipeStepsInput" class="form-label-custom">Étapes de préparation (une par ligne)</label>
-                                 <textarea class="form-control form-control-custom" id="recipeStepsInput" name="etapes" rows="8" placeholder="Écraser les tomates et les oignons.&#10;Faire cuire le mélange dans une casserole.&#10;Ajouter l'eau de cuisson et les poissons." required></textarea>
+                                 <textarea class="form-control form-control-custom" id="recipeStepsInput" name="etapes" rows="8" placeholder="Écraser les tomates et les oignons.&#10;Faire cuire le mélange dans une casserole.&#10;Ajouter l'eau de cuisson et les poissons." required><?= e($recipe['etapes']) ?></textarea>
                               </div>
                            </div>
 
@@ -317,7 +375,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <div class="col-12">
                               <div class="form-group">
                                  <label for="recipeVideoInput" class="form-label-custom">URL vidéo YouTube</label>
-                                 <input type="url" class="form-control form-control-custom" id="recipeVideoInput" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+                                 <input type="url" class="form-control form-control-custom" id="recipeVideoInput" name="video_youtube" value="<?= e($recipe['video_youtube'] ?? '') ?>" placeholder="https://www.youtube.com/watch?v=...">
                                  <small class="text-muted">Optionnel : lien vers une vidéo de préparation.</small>
                               </div>
                            </div>
@@ -326,11 +384,15 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <div class="col-12">
                               <div class="form-group">
                                  <label class="form-label-custom">Image de présentation</label>
-                                 <div class="img-preview-box" id="imageBox">
+                                 <div class="img-preview-box<?= $currentImage ? ' has-image' : '' ?>" id="imageBox">
                                     <i class="far fa-image"></i>
                                     <span class="text-secondary small fw-semibold">Cliquez pour choisir ou glisser-déposer une image</span>
                                     <span class="text-muted small mt-1">Formats acceptés : JPG, PNG, WEBP (Max 5Mo)</span>
-                                    <img src="#" id="imagePreview" alt="Prévisualisation"/>
+                                    <?php if ($currentImage): ?>
+                                       <img src="<?= e($currentImage) ?>" id="imagePreview" alt="Prévisualisation" style="display:block;" />
+                                    <?php else: ?>
+                                       <img src="#" id="imagePreview" alt="Prévisualisation" style="display:none;" />
+                                    <?php endif; ?>
                                  </div>
                                  <input type="file" id="recipeImageFile" name="image" accept="image/*" class="d-none">
                               </div>
@@ -342,7 +404,7 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
                            <!-- Buttons -->
                            <div class="col-12 d-flex justify-content-end gap-3 mt-4 border-top pt-4">
                               <a href="profil.php" class="btn btn-outline-dark px-4 py-2">Annuler</a>
-                              <button type="submit" class="btn btn-danger px-5 py-2 fw-semibold" id="submitBtn"><i class="fas fa-paper-plane me-1"></i> Soumettre la recette</button>
+                              <button type="submit" class="btn btn-danger px-5 py-2 fw-semibold" id="submitBtn"><i class="fas fa-paper-plane me-1"></i> <?= e($submitLabel) ?></button>
                            </div>
                         </div>
                      </form>
@@ -439,12 +501,14 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
             function showPreview(file) {
                if (!file || !file.type.startsWith('image/')) {
                   preview.style.display = 'none';
+                  imageBox.classList.remove('has-image');
                   return;
                }
                var reader = new FileReader();
                reader.onload = function(e) {
                   preview.src = e.target.result;
                   preview.style.display = 'block';
+                  imageBox.classList.add('has-image');
                };
                reader.readAsDataURL(file);
             }

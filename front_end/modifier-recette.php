@@ -38,7 +38,7 @@ function parseList(string $text): string {
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
-$currentImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : null;
+$currentImage = $recipe['image'] ? '../uploads/recettes/' . $recipe['image'] : null;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -146,7 +146,7 @@ $currentImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : null
                            <div class="col-12">
                               <div class="form-group">
                                  <label for="recipeVideoInput" class="form-label-custom">URL vidéo YouTube</label>
-                                 <input type="url" class="form-control form-control-custom" id="recipeVideoInput" name="video_url" value="<?= e($recipe['video_url'] ?? '') ?>">
+                                 <input type="url" class="form-control form-control-custom" id="recipeVideoInput" name="video_youtube" value="<?= e($recipe['video_youtube'] ?? '') ?>">
                                  <small class="text-muted">Optionnel : lien vers une vidéo de préparation.</small>
                               </div>
                            </div>

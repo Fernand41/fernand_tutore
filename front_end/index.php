@@ -351,7 +351,7 @@ $latestRecipes = $pdo->query(
             <?php if (!empty($latestRecipes)): ?>
                <div class="menu-grid row g-4" id="menuGrid">
                   <?php foreach ($latestRecipes as $i => $r):
-                     $img      = !empty($r['image']) ? 'uploads/recettes/' . htmlspecialchars($r['image']) : $placeholder;
+                     $img      = !empty($r['image']) ? '../uploads/recettes/' . htmlspecialchars($r['image']) : $placeholder;
                      $color    = $catColors[$r['categorie_slug']] ?? '#e8281a';
                      $stars    = round((float)$r['note_moyenne']);
                      $badges   = ['Hot', 'New', 'Best Seller', 'Populaire', 'Top'];

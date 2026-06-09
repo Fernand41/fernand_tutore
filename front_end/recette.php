@@ -80,10 +80,10 @@ try {
     error_log('[recette] Erreur de chargement des données : ' . $e->getMessage());
 }
 
-$embedVideoUrl = !empty($recipe['video_url']) ? getYouTubeEmbedUrl($recipe['video_url']) : null;
+$embedVideoUrl = !empty($recipe['video_youtube']) ? getYouTubeEmbedUrl($recipe['video_youtube']) : null;
 $ingredients = parseList($recipe['ingredients'] ?? '');
 $steps = parseList($recipe['etapes'] ?? '');
-$recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg';
+$recipeImage = $recipe['image'] ? '../uploads/recettes/' . $recipe['image'] : 'img/menu/1.jpg';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -690,7 +690,7 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                      <div id="suggestionsContainer">
                         <?php if (!empty($suggestions)): ?>
                            <?php foreach ($suggestions as $suggestion): ?>
-                              <?php $suggestImage = $suggestion['image'] ? 'uploads/recettes/' . $suggestion['image'] : 'img/menu/1.jpg'; ?>
+                              <?php $suggestImage = $suggestion['image'] ? '../uploads/recettes/' . $suggestion['image'] : 'img/menu/1.jpg'; ?>
                               <a href="recette.php?slug=<?= e($suggestion['slug']) ?>" class="suggested-recipe-item text-decoration-none">
                                  <img src="<?= e($suggestImage) ?>" class="suggested-recipe-img" alt="<?= e($suggestion['titre']) ?>">
                                  <div>
