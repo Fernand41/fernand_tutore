@@ -1,0 +1,206 @@
+--- 2026-06-09T04:14:45+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [titre] => Test Recette 1780971284
+            [description] => Description test automatique
+            [ingredients] => Ingrédient A\nIngrédient B
+            [etapes] => Étape 1\nÉtape 2
+            [video_url] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 5
+            [portion] => 2
+            [id_categorie] => 1
+            [csrf_token] => 2638f838f6dd23d4c506d0825112b925a4f0cc6a78e43eb549ffa404be93215a
+        )
+
+    [FILES] => Array
+        (
+        )
+
+    [SESSION_user_id] => 20
+    [SESSION_csrf] => 2638f838f6dd23d4c506d0825112b925a4f0cc6a78e43eb549ffa404be93215a
+)
+Insertion OK: titre=Test Recette 1780971284 id_categorie=1
+--- 2026-06-09T04:15:53+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [titre] => Test Recette 1780971353
+            [description] => Description test automatique
+            [ingredients] => Ingrédient A\nIngrédient B
+            [etapes] => Étape 1\nÉtape 2
+            [video_url] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 5
+            [portion] => 2
+            [id_categorie] => 1
+            [csrf_token] => 718562834eef53b854b59b41d8f28df5ae7605af9d1a47be3f15d67be54003a0
+        )
+
+    [FILES] => Array
+        (
+        )
+
+    [SESSION_user_id] => 21
+    [SESSION_csrf] => 718562834eef53b854b59b41d8f28df5ae7605af9d1a47be3f15d67be54003a0
+)
+Insertion OK: titre=Test Recette 1780971353 id_categorie=1
+--- 2026-06-09T04:16:20+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [titre] => Test Recette 1780971379
+            [description] => Description test automatique
+            [ingredients] => Ingrédient A\nIngrédient B
+            [etapes] => Étape 1\nÉtape 2
+            [video_url] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 5
+            [portion] => 2
+            [id_categorie] => 1
+            [csrf_token] => 35d18b1d4bba8ee6e5f27b19fb1033ab6b9a183ad3419378294e1502e96620e2
+        )
+
+    [FILES] => Array
+        (
+        )
+
+    [SESSION_user_id] => 22
+    [SESSION_csrf] => 35d18b1d4bba8ee6e5f27b19fb1033ab6b9a183ad3419378294e1502e96620e2
+)
+Insertion OK: titre=Test Recette 1780971379 id_categorie=1
+--- 2026-06-09T04:18:09+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [titre] => Test Recette 1780971488
+            [description] => Description test automatique
+            [ingredients] => Ingrédient A\nIngrédient B
+            [etapes] => Étape 1\nÉtape 2
+            [video_url] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 5
+            [portion] => 2
+            [id_categorie] => 1
+            [csrf_token] => dc4071a0445a4be869eddcd424291f5cc194dc256653a9e7a578698dd12e1514
+        )
+
+    [FILES] => Array
+        (
+        )
+
+    [SESSION_user_id] => 23
+    [SESSION_csrf] => dc4071a0445a4be869eddcd424291f5cc194dc256653a9e7a578698dd12e1514
+)
+Insertion OK: titre=Test Recette 1780971488 id_categorie=1
+--- 2026-06-09T04:21:13+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [titre] => Test Recette 1780971673
+            [description] => Description test automatique
+            [ingredients] => Ingrédient A\nIngrédient B
+            [etapes] => Étape 1\nÉtape 2
+            [video_url] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 5
+            [portion] => 2
+            [id_categorie] => 1
+            [csrf_token] => 6c95e689b3fb18f2646e51972b25583976cfe97d43d9deb6b948e91c0e550efc
+        )
+
+    [FILES] => Array
+        (
+        )
+
+    [SESSION_user_id] => 24
+    [SESSION_csrf] => 6c95e689b3fb18f2646e51972b25583976cfe97d43d9deb6b948e91c0e550efc
+)
+Insertion OK: titre=Test Recette 1780971673 id_categorie=1
+--- 2026-06-09T04:49:08+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [titre] => Recette de Test Automatique
+            [id_categorie] => 1
+            [description] => 
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 20
+            [portion] => 4
+            [ingredients] => 500g de riz
+2 tomates
+1 oignon
+1 cube de bouillon
+            [etapes] => Cuire le riz
+Préparer la sauce
+Servir.
+            [video_url] => 
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => 
+                    [error] => 4
+                    [size] => 0
+                )
+
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+Validation errors: La description est obligatoire.
+--- 2026-06-09T04:49:57+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [titre] => Recette test utilisateur
+            [id_categorie] => 1
+            [description] => Une recette test envoyée depuis l’assistant.
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 20
+            [portion] => 4
+            [ingredients] => 500g de riz
+2 tomates
+1 oignon
+1 cube de bouillon
+            [etapes] => Cuire le riz
+Préparer la sauce
+Servir.
+            [video_url] => 
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => 
+                    [error] => 4
+                    [size] => 0
+                )
+
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+Insertion OK: titre=Recette test utilisateur id_categorie=1

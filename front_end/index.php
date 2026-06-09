@@ -11,12 +11,14 @@ $categories = $pdo->query('
     ORDER BY c.nom
 ')->fetchAll();
 $latestRecipes = $pdo->query(
-    'SELECT r.id, r.slug, r.titre, r.description, r.image, c.nom AS categorie
+    'SELECT r.id, r.slug, r.titre, r.description, r.image,
+            r.note_moyenne, r.nb_notes, r.difficulte, r.temps_prep,
+            c.nom AS categorie, c.slug AS categorie_slug
      FROM recettes r
      JOIN categories_recettes c ON r.id_categorie = c.id
      WHERE r.statut = "publie"
      ORDER BY r.date_publication DESC, r.date_creation DESC
-     LIMIT 6'
+     LIMIT 9'
 )->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -305,7 +307,116 @@ $latestRecipes = $pdo->query(
             </div>
          </div>
       </section>
-      <!-- SPECIAL OFFER -->
+
+      <!-- ===== NOS RECETTES (menu style) ===== -->
+      <?php
+      /* Couleurs badge par catégorie */
+      $catColors = [
+         'plats-principaux' => '#e8281a',
+         'soupes-sauces'    => '#e67e22',
+         'entrees'          => '#27ae60',
+         'desserts'         => '#8e44ad',
+         'boissons'         => '#2980b9',
+         'collations'       => '#16a085',
+      ];
+      /* Image placeholder par défaut si la recette n'a pas d'image */
+      $placeholder = 'img/menu/1.jpg';
+      ?>
+      <section id="menu" style="background:var(--light); padding: 80px 0;">
+         <div class="container">
+
+            <!-- Titre -->
+            <div class="text-center mb-5" data-aos="fade-up">
+               <span class="slbl">Nos Recettes</span>
+               <h2 class="stitle">Nos Délicieuses <span>Recettes</span></h2>
+               <div class="sline"></div>
+               <p class="sdesc mx-auto" style="max-width:520px;">
+                  Découvrez les meilleures recettes béninoises partagées par notre communauté et approuvées par l'équipe.
+               </p>
+            </div>
+
+            <!-- Filtres par catégorie -->
+            <div class="menu-filters d-flex flex-wrap justify-content-center gap-2 mb-5" data-aos="fade-up">
+               <button class="mf-btn active" data-filter="all">Tout</button>
+               <?php foreach ($categories as $cat): ?>
+                  <?php if ((int)$cat['nb_recettes'] > 0): ?>
+                     <button class="mf-btn" data-filter="<?= htmlspecialchars($cat['slug']) ?>">
+                        <?= htmlspecialchars($cat['nom']) ?>
+                     </button>
+                  <?php endif; ?>
+               <?php endforeach; ?>
+            </div>
+
+            <!-- Grille recettes -->
+            <?php if (!empty($latestRecipes)): ?>
+               <div class="menu-grid row g-4" id="menuGrid">
+                  <?php foreach ($latestRecipes as $i => $r):
+                     $img      = !empty($r['image']) ? 'uploads/recettes/' . htmlspecialchars($r['image']) : $placeholder;
+                     $color    = $catColors[$r['categorie_slug']] ?? '#e8281a';
+                     $stars    = round((float)$r['note_moyenne']);
+                     $badges   = ['Hot', 'New', 'Best Seller', 'Populaire', 'Top'];
+                     $badge    = $i < count($badges) ? $badges[$i] : null;
+                  ?>
+                  <div class="col-md-6 col-lg-4 menu-item" data-cat="<?= htmlspecialchars($r['categorie_slug']) ?>"
+                       data-aos="fade-up" data-aos-delay="<?= ($i % 3) * 80 ?>">
+                     <div class="mcard">
+
+                        <!-- Image -->
+                        <div class="mcard-img-wrap">
+                           <img src="<?= $img ?>" alt="<?= htmlspecialchars($r['titre']) ?>" class="mcard-img" loading="lazy"/>
+                           <?php if ($badge): ?>
+                              <span class="mcard-badge" style="background:<?= $color ?>">
+                                 <i class="fas fa-star"></i> <?= $badge ?>
+                              </span>
+                           <?php endif; ?>
+                           <!-- Bouton favoris visuel (décoratif) -->
+                           <button class="mcard-fav" aria-label="Favoris"><i class="far fa-heart"></i></button>
+                        </div>
+
+                        <!-- Corps -->
+                        <div class="mcard-body">
+                           <span class="mcard-cat" style="color:<?= $color ?>"><?= htmlspecialchars(strtoupper($r['categorie'])) ?></span>
+                           <h5 class="mcard-title"><?= htmlspecialchars($r['titre']) ?></h5>
+                           <p class="mcard-desc"><?= htmlspecialchars(mb_substr($r['description'], 0, 90)) ?>…</p>
+
+                           <!-- Footer : étoiles + bouton -->
+                           <div class="mcard-footer">
+                              <div class="mcard-stars">
+                                 <?php for ($s = 1; $s <= 5; $s++): ?>
+                                    <i class="<?= $s <= $stars ? 'fas' : 'far' ?> fa-star"></i>
+                                 <?php endfor; ?>
+                                 <?php if ($r['nb_notes'] > 0): ?>
+                                    <span class="mcard-nb">(<?= (int)$r['nb_notes'] ?>)</span>
+                                 <?php endif; ?>
+                              </div>
+                              <a href="recette.php?slug=<?= urlencode($r['slug']) ?>" class="mcard-plus" aria-label="Voir la recette">
+                                 <i class="fas fa-plus"></i>
+                              </a>
+                           </div>
+                        </div>
+
+                     </div>
+                  </div>
+                  <?php endforeach; ?>
+               </div>
+
+               <!-- Bouton "Voir toutes les recettes" -->
+               <div class="text-center mt-5" data-aos="fade-up">
+                  <a href="recettes.php" class="btn-red">
+                     <i class="fas fa-book-open"></i> Voir toutes les recettes
+                  </a>
+               </div>
+
+            <?php else: ?>
+               <div class="text-center py-5">
+                  <i class="fas fa-utensils fa-3x mb-3" style="color:var(--primary);opacity:.4;"></i>
+                  <p class="text-muted">Aucune recette publiée pour le moment. Revenez bientôt !</p>
+               </div>
+            <?php endif; ?>
+
+         </div>
+      </section>
+      <!-- ===== FIN NOS RECETTES ===== -->
       <section id="special">
          <div class="spbg"></div>
          <div class="container" style="position:relative;z-index:2;">
@@ -908,6 +1019,30 @@ $latestRecipes = $pdo->query(
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <!-- API REST Integration -->
+      <!-- Filtre recettes -->
+      <script>
+      (function () {
+         const btns  = document.querySelectorAll('.mf-btn');
+         const items = document.querySelectorAll('.menu-item');
+
+         btns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+               // Activer le bouton cliqué
+               btns.forEach(function(b) { b.classList.remove('active'); });
+               btn.classList.add('active');
+
+               var filter = btn.dataset.filter;
+
+               items.forEach(function(item) {
+                  if (filter === 'all' || item.dataset.cat === filter) {
+                     item.classList.remove('hidden');
+                  } else {
+                     item.classList.add('hidden');
+                  }
+               });
+            });
+         });
+      })();
+      </script>
    </body>
 </html>

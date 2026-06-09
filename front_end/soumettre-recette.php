@@ -408,6 +408,55 @@ $categories = $pdo->query("SELECT id, nom FROM categories_recettes ORDER BY nom"
       <script src="js/jquery.magnific-popup.min.js"></script>
       <!-- Main js -->
       <script src="js/main.js"></script>
-      <script src="js/main.js"></script>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+            var imageBox = document.getElementById('imageBox');
+            var fileInput = document.getElementById('recipeImageFile');
+            var preview = document.getElementById('imagePreview');
+
+            if (!imageBox || !fileInput || !preview) return;
+
+            function showPreview(file) {
+               if (!file || !file.type.startsWith('image/')) {
+                  preview.style.display = 'none';
+                  return;
+               }
+               var reader = new FileReader();
+               reader.onload = function(e) {
+                  preview.src = e.target.result;
+                  preview.style.display = 'block';
+               };
+               reader.readAsDataURL(file);
+            }
+
+            imageBox.addEventListener('click', function() {
+               fileInput.click();
+            });
+
+            imageBox.addEventListener('dragover', function(event) {
+               event.preventDefault();
+               imageBox.classList.add('dragover');
+            });
+
+            imageBox.addEventListener('dragleave', function() {
+               imageBox.classList.remove('dragover');
+            });
+
+            imageBox.addEventListener('drop', function(event) {
+               event.preventDefault();
+               imageBox.classList.remove('dragover');
+               var files = event.dataTransfer.files;
+               if (!files || files.length === 0) return;
+               fileInput.files = files;
+               showPreview(files[0]);
+            });
+
+            fileInput.addEventListener('change', function() {
+               if (fileInput.files && fileInput.files.length > 0) {
+                  showPreview(fileInput.files[0]);
+               }
+            });
+         });
+      </script>
    </body>
 </html>

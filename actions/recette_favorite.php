@@ -34,13 +34,13 @@ try {
         exit;
     }
 
-    $check = $pdo->prepare('SELECT id FROM favoris WHERE id_user = ? AND id_recette = ? LIMIT 1');
+    $check = $pdo->prepare('SELECT id FROM favoris WHERE id_utilisateur = ? AND id_recette = ? LIMIT 1');
     $check->execute([$userId, $idRecette]);
     if ($check->fetch()) {
-        $pdo->prepare('DELETE FROM favoris WHERE id_user = ? AND id_recette = ?')->execute([$userId, $idRecette]);
+        $pdo->prepare('DELETE FROM favoris WHERE id_utilisateur = ? AND id_recette = ?')->execute([$userId, $idRecette]);
         setFlash('success', 'Recette retirée de vos favoris.');
     } else {
-        $pdo->prepare('INSERT INTO favoris (id_user, id_recette) VALUES (?, ?)')->execute([$userId, $idRecette]);
+        $pdo->prepare('INSERT INTO favoris (id_utilisateur, id_recette) VALUES (?, ?)')->execute([$userId, $idRecette]);
         setFlash('success', 'Recette ajoutée à vos favoris.');
     }
 

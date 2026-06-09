@@ -7,7 +7,23 @@ $front = $base . '/front_end';
 $cookieFile = __DIR__ . '/cookie.txt';
 @unlink($cookieFile);
 
+require_once __DIR__ . '/../config/database.php';
+
 define('VERBOSE', true);
+
+function db_execute($sql, $params = []) {
+    static $pdo;
+    if (!$pdo) {
+        $pdo = Database::getInstance();
+    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt;
+}
+
+function db_fetchOne($sql, $params = []) {
+    return db_execute($sql, $params)->fetch();
+}
 
 function http_get($url) {
     global $cookieFile;
@@ -218,6 +234,20 @@ if (!$csrf) {
     $resSub = http_post($base . '/actions/recette_submit.php', $post);
     if (strpos($resSub['body'], 'Votre recette') !== false || strpos(http_get($front . '/profil.php')['body'], 'Votre recette') !== false) {
         save_result('Soumission recette', true);
+        $submittedTitle = $post['titre'];
+
+        // Récupérer l'id et le slug de la recette soumise
+        $submittedRecipe = db_fetchOne(
+            'SELECT id, slug FROM recettes WHERE titre = ? AND id_auteur = (SELECT id FROM utilisateurs WHERE email = ? LIMIT 1) ORDER BY id DESC LIMIT 1',
+            [$submittedTitle, $testEmail]
+        );
+        if ($submittedRecipe) {
+            $submittedRecipeId = $submittedRecipe['id'];
+            $submittedRecipeSlug = $submittedRecipe['slug'];
+            save_result('Récup recette soumise', true, "id={$submittedRecipeId} slug={$submittedRecipeSlug}");
+        } else {
+            save_result('Récup recette soumise', false, 'introuvable en base');
+        }
     } else {
         save_result('Soumission recette', false, 'réponse inattendue');
         if (VERBOSE) {
@@ -226,6 +256,105 @@ if (!$csrf) {
             echo "--- page soumettre-recette (form) ---\n";
             echo substr($submitPage['body'], 0, 4000) . "\n";
         }
+    }
+}
+
+// 7) Promotion du compte en admin et publication de la recette soumise
+if (!empty($submittedRecipeId) && !empty($submittedRecipeSlug)) {
+    // Donner le rôle admin à l'utilisateur courant
+    db_execute('UPDATE utilisateurs SET role = ? WHERE email = ?', ['admin', $testEmail]);
+    save_result('Promotion du compte en admin', true);
+
+    // Déconnexion puis reconnexion en tant qu'admin
+    http_get($base . '/actions/auth_logout.php');
+    $loginPage = http_get($front . '/login.php');
+    $csrf = extract_csrf($loginPage['body']);
+    $post = [
+        'email' => $testEmail,
+        'mot_de_passe' => $testPass,
+        'csrf_token' => $csrf,
+    ];
+    $resAdminLogin = http_post($base . '/actions/auth_login.php', $post);
+    if (strpos($resAdminLogin['body'], 'Administration') !== false || strpos($resAdminLogin['body'], 'Tableau de bord') !== false) {
+        save_result('Connexion admin', true);
+    } else {
+        save_result('Connexion admin', false, 'Impossible de se connecter en admin');
+    }
+
+    // Charger la page d'administration et extraire le token CSRF
+    $adminPage = http_get($base . '/admin/recettes.php');
+    $csrfAdmin = extract_csrf($adminPage['body']);
+    if (!$csrfAdmin) {
+        save_result('Préparer publication admin', false, 'csrf introuvable');
+    } else {
+        $post = [
+            'action' => 'publier',
+            'id' => $submittedRecipeId,
+            'csrf_token' => $csrfAdmin,
+        ];
+        $resPublish = http_post($base . '/admin/recettes.php', $post);
+        if (strpos($resPublish['body'], 'Statut de la recette mis à jour') !== false) {
+            save_result('Publication admin', true);
+        } else {
+            save_result('Publication admin', false, 'réponse inattendue');
+            if (VERBOSE) {
+                echo "--- réponse brute publication admin ---\n";
+                echo substr($resPublish['body'], 0, 4000) . "\n";
+            }
+        }
+    }
+
+    // Vérifier l'affichage sur la page des recettes front-end
+    $recipesPage = http_get($front . '/recettes.php');
+    if (strpos($recipesPage['body'], $submittedTitle) !== false || strpos($recipesPage['body'], $submittedRecipeSlug) !== false) {
+        save_result('Recette publiée visible dans les recettes', true);
+    } else {
+        save_result('Recette publiée visible dans les recettes', false, 'titre ou slug introuvable');
+    }
+
+    // Vérifier la page détail de la recette publiée
+    $recDetail = http_get($front . '/recette.php?slug=' . $submittedRecipeSlug);
+    if (strpos($recDetail['body'], $submittedTitle) !== false || strpos($recDetail['body'], 'Commentaires') !== false) {
+        save_result('Page détail recette publiée', true);
+    } else {
+        save_result('Page détail recette publiée', false, 'détail introuvable');
+    }
+
+    // Commentaire sur la recette publiée
+    $csrf = extract_csrf($recDetail['body']);
+    $commentPost = [
+        'id_recette' => $submittedRecipeId,
+        'note' => 5,
+        'contenu' => 'Commentaire automatique après publication',
+        'csrf_token' => $csrf,
+    ];
+    $resComment = http_post($base . '/actions/recette_comment.php', $commentPost);
+    if (strpos($resComment['body'], 'Merci pour votre avis') !== false || strpos(http_get($front . '/recette.php?slug=' . $submittedRecipeSlug)['body'], 'Merci pour votre avis') !== false) {
+        save_result('Commentaire sur recette publiée', true);
+    } else {
+        save_result('Commentaire sur recette publiée', false, 'réponse inattendue');
+    }
+
+    // Favoris sur la recette publiée
+    $recPage = http_get($front . '/recette.php?slug=' . $submittedRecipeSlug);
+    $csrf = extract_csrf($recPage['body']);
+    $favPost = ['id_recette' => $submittedRecipeId, 'csrf_token' => $csrf];
+    $resFav = http_post($base . '/actions/recette_favorite.php', $favPost);
+    $favSuccess = strpos($resFav['body'], 'Recette ajoutée') !== false || strpos($resFav['body'], 'Recette retirée') !== false;
+    $profile = http_get($front . '/profil.php');
+    $profileHasFavorite = strpos($profile['body'], $submittedTitle) !== false || strpos($profile['body'], $submittedRecipeSlug) !== false;
+    if ($favSuccess) {
+        save_result('Favoris sur recette publiée', true);
+    } elseif ($profileHasFavorite) {
+        save_result('Favoris sur recette publiée', true, 'vérifié via profil');
+    } else {
+        save_result('Favoris sur recette publiée', false, 'réponse inattendue');
+    }
+
+    if ($profileHasFavorite) {
+        save_result('Favoris visible dans le profil', true);
+    } else {
+        save_result('Favoris visible dans le profil', false, 'non trouvé dans profil');
     }
 }
 

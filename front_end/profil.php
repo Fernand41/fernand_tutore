@@ -12,7 +12,7 @@ $userRole  = currentUserRole() ?? 'Membre';
 $favorites = [];
 $myRecipes = [];
 try {
-    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image, r.statut FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE f.id_user = ? AND r.statut = "publie" ORDER BY f.date_ajout DESC LIMIT 6');
+    $stmt = $pdo->prepare('SELECT r.id, r.slug, r.titre, r.image, r.statut FROM favoris f JOIN recettes r ON f.id_recette = r.id WHERE f.id_utilisateur = ? AND r.statut = "publie" ORDER BY f.date_ajout DESC LIMIT 6');
     $stmt->execute([currentUserId()]);
     $favorites = $stmt->fetchAll();
 

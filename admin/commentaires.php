@@ -4,19 +4,14 @@
  * Modération des commentaires
  */
 
+require_once '../includes/session.php';
 require_once '../config/database.php';
-
-$adminPageTitle  = 'Commentaires | Goûts du Bénin';
-$adminActivePage = 'commentaires';
-$breadcrumb      = [['label' => 'Commentaires', 'url' => 'commentaires.php']];
-$adminAssets     = '../back_end';
-
-require_once '../includes/admin_header.php';
 
 $pdo = Database::getInstance();
 
 // ── Actions POST ─────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireAdmin('../front_end/login.php');
     verifyCsrf('commentaires.php');
     $action = $_POST['action'] ?? '';
     $id     = (int) ($_POST['id'] ?? 0);
@@ -38,6 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: commentaires.php');
     exit;
 }
+
+$adminPageTitle  = 'Commentaires | Goûts du Bénin';
+$adminActivePage = 'commentaires';
+$breadcrumb      = [['label' => 'Commentaires', 'url' => 'commentaires.php']];
+$adminAssets     = '../back_end';
+
+require_once '../includes/admin_header.php';
 
 // ── Filtres ──────────────────────────────────────────────────────────────────
 $filtreStatut = $_GET['statut'] ?? 'en_attente';

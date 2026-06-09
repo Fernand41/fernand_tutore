@@ -1,0 +1,288 @@
+--- 2026-06-09T04:14:45+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 2
+            [note] => 4
+            [contenu] => Test automatique: très bonne recette
+            [csrf_token] => 2638f838f6dd23d4c506d0825112b925a4f0cc6a78e43eb549ffa404be93215a
+        )
+
+    [SESSION_user_id] => 20
+    [SESSION_csrf] => 2638f838f6dd23d4c506d0825112b925a4f0cc6a78e43eb549ffa404be93215a
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":2,"average":"4.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:14:45+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 7
+            [note] => 5
+            [contenu] => Commentaire automatique après publication
+            [csrf_token] => 3bc828cbb01c21d0ef65ae52e16f150ccc3a9b5418ded7ebd0eba03d712d7d50
+        )
+
+    [SESSION_user_id] => 20
+    [SESSION_csrf] => 3bc828cbb01c21d0ef65ae52e16f150ccc3a9b5418ded7ebd0eba03d712d7d50
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:15:53+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 7
+            [note] => 4
+            [contenu] => Test automatique: très bonne recette
+            [csrf_token] => 718562834eef53b854b59b41d8f28df5ae7605af9d1a47be3f15d67be54003a0
+        )
+
+    [SESSION_user_id] => 21
+    [SESSION_csrf] => 718562834eef53b854b59b41d8f28df5ae7605af9d1a47be3f15d67be54003a0
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":2,"average":"4.5"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:15:54+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 8
+            [note] => 5
+            [contenu] => Commentaire automatique après publication
+            [csrf_token] => 82b421db1a2497a9ef906563a9908a9bbf620deb3daf5426ddae0f499d605673
+        )
+
+    [SESSION_user_id] => 21
+    [SESSION_csrf] => 82b421db1a2497a9ef906563a9908a9bbf620deb3daf5426ddae0f499d605673
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:16:20+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 8
+            [note] => 4
+            [contenu] => Test automatique: très bonne recette
+            [csrf_token] => 35d18b1d4bba8ee6e5f27b19fb1033ab6b9a183ad3419378294e1502e96620e2
+        )
+
+    [SESSION_user_id] => 22
+    [SESSION_csrf] => 35d18b1d4bba8ee6e5f27b19fb1033ab6b9a183ad3419378294e1502e96620e2
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":2,"average":"4.5"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:16:20+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 9
+            [note] => 5
+            [contenu] => Commentaire automatique après publication
+            [csrf_token] => 33399f09ed5b108dcb9cc19b1cc59d10b5cd569693817d225309727b92123c7f
+        )
+
+    [SESSION_user_id] => 22
+    [SESSION_csrf] => 33399f09ed5b108dcb9cc19b1cc59d10b5cd569693817d225309727b92123c7f
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:18:09+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 9
+            [note] => 4
+            [contenu] => Test automatique: très bonne recette
+            [csrf_token] => dc4071a0445a4be869eddcd424291f5cc194dc256653a9e7a578698dd12e1514
+        )
+
+    [SESSION_user_id] => 23
+    [SESSION_csrf] => dc4071a0445a4be869eddcd424291f5cc194dc256653a9e7a578698dd12e1514
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":2,"average":"4.5"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:18:09+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 10
+            [note] => 5
+            [contenu] => Commentaire automatique après publication
+            [csrf_token] => eba0b42a5f194d6f40946e3b4352a6764a5631b37336282a364b1a936b4be567
+        )
+
+    [SESSION_user_id] => 23
+    [SESSION_csrf] => eba0b42a5f194d6f40946e3b4352a6764a5631b37336282a364b1a936b4be567
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:21:13+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 10
+            [note] => 4
+            [contenu] => Test automatique: très bonne recette
+            [csrf_token] => 6c95e689b3fb18f2646e51972b25583976cfe97d43d9deb6b948e91c0e550efc
+        )
+
+    [SESSION_user_id] => 24
+    [SESSION_csrf] => 6c95e689b3fb18f2646e51972b25583976cfe97d43d9deb6b948e91c0e550efc
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":2,"average":"4.5"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T04:21:14+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [id_recette] => 11
+            [note] => 5
+            [contenu] => Commentaire automatique après publication
+            [csrf_token] => 4d8ec4a261982179b952c543480a1d5996ac646bf68bf23d2231679f809bd420
+        )
+
+    [SESSION_user_id] => 24
+    [SESSION_csrf] => 4d8ec4a261982179b952c543480a1d5996ac646bf68bf23d2231679f809bd420
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T05:06:01+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [id_recette] => 12
+            [note] => 5
+            [contenu] => Commentaire de test via assistant.
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"5.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T05:08:19+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [id_recette] => 12
+            [note] => 1
+            [contenu] => bonne recette
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"1.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok
+--- 2026-06-09T05:29:02+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [id_recette] => 12
+            [note] => 0
+            [contenu] => c'est trop cool
+
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+--- 2026-06-09T05:29:25+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+            [id_recette] => 12
+            [note] => 4
+            [contenu] => c'est cool
+        )
+
+    [SESSION_user_id] => 2
+    [SESSION_csrf] => 19f22c35b7197dcc501221847f48cc70e63effcfe9f80ed9b2bb7d164923a2d7
+)
+commentaires columns: ["id","id_recette","id_utilisateur","contenu","statut","date_creation","date_maj"]
+check recette fetch: true
+insert commentaires result: true | err: ["00000",null,null]
+upsert note result: true | err: ["00000",null,null]
+avg stats: {"total":1,"average":"4.0"}
+update recette result: true | err: ["00000",null,null]
+commit ok

@@ -14,7 +14,7 @@ $sql = 'SELECT r.*, c.nom AS categorie, c.slug AS categorie_slug, u.pseudo AS au
         FROM recettes r
         JOIN categories_recettes c ON r.id_categorie = c.id
         JOIN utilisateurs u ON r.id_auteur = u.id
-        WHERE r.statut = "publie"';
+        WHERE r.statut = \'publie\'';
 $params = [];
 if ($id !== null && $id > 0) {
     $sql .= ' AND r.id = ?';
@@ -51,16 +51,16 @@ function getYouTubeEmbedUrl(string $url): ?string {
 
 try {
     if ($loggedIn) {
-        $favStmt = $pdo->prepare('SELECT id FROM favoris WHERE id_user = ? AND id_recette = ? LIMIT 1');
+        $favStmt = $pdo->prepare('SELECT id FROM favoris WHERE id_utilisateur = ? AND id_recette = ? LIMIT 1');
         $favStmt->execute([currentUserId(), $recipe['id']]);
         $alreadyFavorited = (bool) $favStmt->fetch();
     }
 
     $commentStmt = $pdo->prepare(
-        'SELECT c.*, COALESCE(u.pseudo, c.nom_utilisateur) AS auteur_nom
+        'SELECT c.*, COALESCE(u.pseudo, "Utilisateur") AS auteur_nom
          FROM commentaires c
-         LEFT JOIN utilisateurs u ON u.id = c.id_user
-         WHERE c.id_recette = ? AND c.statut = "publie"
+         LEFT JOIN utilisateurs u ON u.id = c.id_utilisateur
+         WHERE c.id_recette = ? AND c.statut = \'approuve\'
          ORDER BY c.date_creation DESC'
     );
     $commentStmt->execute([$recipe['id']]);
@@ -70,7 +70,7 @@ try {
     $suggestStmt = $pdo->prepare(
         'SELECT r.id, r.slug, r.titre, r.image, r.note_moyenne
          FROM recettes r
-         WHERE r.statut = "publie" AND r.id != ? AND r.id_categorie = ?
+         WHERE r.statut = \'publie\' AND r.id != ? AND r.id_categorie = ?
          ORDER BY r.note_moyenne DESC, r.date_creation DESC
          LIMIT 4'
     );
@@ -591,6 +591,8 @@ $recipeImage = $recipe['image'] ? 'uploads/recettes/' . $recipe['image'] : 'img/
                   <!-- Comments & Ratings -->
                   <div class="section-card">
                      <h3 class="fw-bold mb-4" style="color:var(--dark);"><i class="far fa-comments text-danger me-2"></i>Commentaires (<span id="commentsCount"><?= (int) $commentsCount ?></span>)</h3>
+                     <!-- CHECK_COMMENTS_QUERY -->
+                     <!-- DEBUG_COMMENTS <?= json_encode($comments) ?> -->
                      <div id="commentsContainer">
                         <?php if (!empty($comments)): ?>
                            <?php foreach ($comments as $comment): ?>

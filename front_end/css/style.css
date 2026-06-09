@@ -601,6 +601,174 @@ section {
   .catimg  { width: 76px; height: 76px; }
 }
 
+
+/* ===================== MENU / RECETTES ===================== */
+.mf-btn {
+  background: #fff;
+  border: 2px solid #e5e5e5;
+  border-radius: 50px;
+  padding: 10px 26px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: 0.25s;
+  letter-spacing: 0.02em;
+}
+.mf-btn:hover,
+.mf-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(232,40,26,0.25);
+}
+
+/* Carte recette */
+.mcard {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.mcard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 40px rgba(232,40,26,0.13);
+}
+
+/* Image */
+.mcard-img-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 260px;
+  flex-shrink: 0;
+}
+.mcard-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+  display: block;
+}
+.mcard:hover .mcard-img {
+  transform: scale(1.06);
+}
+.mcard-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  letter-spacing: 0.02em;
+}
+.mcard-fav {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 0.9rem;
+  transition: 0.25s;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.mcard-fav:hover { color: var(--primary); }
+
+/* Corps */
+.mcard-body {
+  padding: 20px 20px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.mcard-cat {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.mcard-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.12rem;
+  color: var(--dark);
+  margin-bottom: 8px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+.mcard-desc {
+  font-size: 0.83rem;
+  color: #888;
+  line-height: 1.55;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+/* Footer carte */
+.mcard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.mcard-stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #f6a623;
+  font-size: 0.82rem;
+}
+.mcard-nb {
+  font-size: 0.76rem;
+  color: #aaa;
+  margin-left: 5px;
+}
+.mcard-plus {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  transition: 0.25s;
+  flex-shrink: 0;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(232,40,26,0.3);
+}
+.mcard-plus:hover {
+  background: #c0180f;
+  color: #fff;
+  transform: scale(1.12) rotate(90deg);
+}
+
+/* Item caché par filtre */
+.menu-item.hidden {
+  display: none;
+}
+
 /* ===================== ABOUT ===================== */
 #about {
   background: #fff;

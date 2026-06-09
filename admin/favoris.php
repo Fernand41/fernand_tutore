@@ -136,7 +136,7 @@ if ($tab === 'favoris') {
     try {
         $stmtCount = $pdo->prepare(
             "SELECT COUNT(*) FROM favoris f
-             JOIN utilisateurs u ON f.id_user = u.id
+             JOIN utilisateurs u ON f.id_utilisateur = u.id
              JOIN recettes r ON f.id_recette = r.id
              LEFT JOIN categories_recettes c ON r.id_categorie = c.id
              WHERE $where"
@@ -148,7 +148,7 @@ if ($tab === 'favoris') {
             "SELECT f.id, f.date_ajout, u.pseudo AS utilisateur, r.id AS id_recette, r.titre AS recette,
                     c.nom AS categorie
              FROM favoris f
-             JOIN utilisateurs u ON f.id_user = u.id
+             JOIN utilisateurs u ON f.id_utilisateur = u.id
              JOIN recettes r ON f.id_recette = r.id
              LEFT JOIN categories_recettes c ON r.id_categorie = c.id
              WHERE $where
@@ -165,7 +165,7 @@ if ($tab === 'favoris') {
     try {
         $stmtCount = $pdo->prepare(
             "SELECT COUNT(*) FROM notes n
-             JOIN utilisateurs u ON n.id_user = u.id
+             JOIN utilisateurs u ON n.id_utilisateur = u.id
              JOIN recettes r ON n.id_recette = r.id
              LEFT JOIN categories_recettes c ON r.id_categorie = c.id
              WHERE $where"
@@ -177,7 +177,7 @@ if ($tab === 'favoris') {
             "SELECT n.id, n.valeur, n.date_creation, u.pseudo AS utilisateur, r.id AS id_recette, r.titre AS recette,
                     c.nom AS categorie
              FROM notes n
-             JOIN utilisateurs u ON n.id_user = u.id
+             JOIN utilisateurs u ON n.id_utilisateur = u.id
              JOIN recettes r ON n.id_recette = r.id
              LEFT JOIN categories_recettes c ON r.id_categorie = c.id
              WHERE $where
