@@ -641,7 +641,7 @@ $recipeImage = $recipe['image'] ? '../uploads/recettes/' . $recipe['image'] : 'i
                      <?php else: ?>
                         <div class="alert alert-dark border-0 p-4 text-center">
                            <p class="mb-3">Vous devez être connecté pour donner une note et écrire un commentaire.</p>
-                           <a href="login.php" class="btn btn-danger px-4">Se connecter</a>
+                           <a href="login.php?redirect=<?= urlencode('recette.php?slug=' . $recipe['slug']) ?>" class="btn btn-danger px-4">Se connecter</a>
                         </div>
                      <?php endif; ?>
                   </div>

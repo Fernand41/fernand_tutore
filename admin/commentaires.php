@@ -42,7 +42,10 @@ $adminAssets     = '../back_end';
 require_once '../includes/admin_header.php';
 
 // ── Filtres ──────────────────────────────────────────────────────────────────
-$filtreStatut = $_GET['statut'] ?? 'en_attente';
+$filtreStatut = $_GET['statut'] ?? '';
+if ($filtreStatut === 'all') {
+    $filtreStatut = '';
+}
 $recherche    = trim($_GET['q'] ?? '');
 $page         = max(1, (int)($_GET['page'] ?? 1));
 $parPage      = 20;
@@ -87,8 +90,13 @@ $stmtList = $pdo->prepare("
 $stmtList->execute($params);
 $commentaires = $stmtList->fetchAll();
 
-// Compteurs par statut
-$stmtCpt = $pdo->query("SELECT statut, COUNT(*) AS n FROM commentaires GROUP BY statut");
+// Compteurs par statut (uniquement commentaires associés à un utilisateur et une recette)
+$stmtCpt = $pdo->query(
+    "SELECT c.statut, COUNT(*) AS n FROM commentaires c
+     JOIN utilisateurs u ON c.id_utilisateur = u.id
+     JOIN recettes r ON c.id_recette = r.id
+     GROUP BY c.statut"
+);
 $compteurs = [];
 foreach ($stmtCpt->fetchAll() as $row) {
     $compteurs[$row['statut']] = (int) $row['n'];
@@ -125,16 +133,16 @@ foreach ($stmtCpt->fetchAll() as $row) {
 
 <!-- Badges -->
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="commentaires.php?statut=en_attente" class="badge text-bg-warning text-decoration-none fs-6 px-3 py-2">
+    <a href="commentaires.php?statut=en_attente" class="badge <?= $filtreStatut === 'en_attente' ? 'bg-dark text-white' : 'text-bg-warning' ?> text-decoration-none fs-6 px-3 py-2">
         En attente (<?= $compteurs['en_attente'] ?? 0 ?>)
     </a>
-    <a href="commentaires.php?statut=approuve" class="badge text-bg-success text-decoration-none fs-6 px-3 py-2">
+    <a href="commentaires.php?statut=approuve" class="badge <?= $filtreStatut === 'approuve' ? 'bg-dark text-white' : 'text-bg-success' ?> text-decoration-none fs-6 px-3 py-2">
         Approuvés (<?= $compteurs['approuve'] ?? 0 ?>)
     </a>
-    <a href="commentaires.php?statut=rejete" class="badge text-bg-danger text-decoration-none fs-6 px-3 py-2">
+    <a href="commentaires.php?statut=rejete" class="badge <?= $filtreStatut === 'rejete' ? 'bg-dark text-white' : 'text-bg-danger' ?> text-decoration-none fs-6 px-3 py-2">
         Rejetés (<?= $compteurs['rejete'] ?? 0 ?>)
     </a>
-    <a href="commentaires.php" class="badge text-bg-secondary text-decoration-none fs-6 px-3 py-2">
+    <a href="commentaires.php?statut=all" class="badge <?= $filtreStatut === '' ? 'bg-dark text-white' : 'text-bg-secondary' ?> text-decoration-none fs-6 px-3 py-2">
         Tous (<?= array_sum($compteurs) ?>)
     </a>
 </div>

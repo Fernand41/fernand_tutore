@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/session.php';
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>GoûtsBénin - Inscription</title>
+      <?php $registerRedirect = trim($_GET['redirect'] ?? ''); ?>
       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
       <link href="css/bootstrap.min.css" rel="stylesheet"/>
       <link rel="stylesheet" href="css/all.min.css"/>
@@ -162,6 +163,9 @@ require_once __DIR__ . '/../includes/session.php';
 
          <form id="registerForm" action="../actions/auth_register.php" method="POST" novalidate>
             <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+            <?php if ($registerRedirect !== ''): ?>
+               <input type="hidden" name="redirect" value="<?= e($registerRedirect) ?>">
+            <?php endif; ?>
             <div class="mb-3">
                <label class="flbl">Pseudo / Nom d'utilisateur *</label>
                <input type="text" id="registerPseudo" name="pseudo" class="form-control fctrl" placeholder="Ex: Koffi97" required />
@@ -185,15 +189,22 @@ require_once __DIR__ . '/../includes/session.php';
                <div class="invalid-feedback">Veuillez confirmer votre mot de passe.</div>
             </div>
             
-            <button type="submit" class="btn-red mb-3 d-flex align-items-center gap-2">
-               <i class="fas fa-user-plus"></i> S'inscrire
+            <button type="submit" id="registerBtn" class="btn-red mb-3 d-flex align-items-center gap-2">
+               <span id="registerBtnContent"><i class="fas fa-user-plus"></i> S'inscrire</span>
+               <span id="registerSpinner" style="display:none; align-items:center;">
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Inscription en cours...
+               </span>
             </button>
             
             <div class="text-center text-white-50" style="font-size: 0.85rem;">
-               Déjà un compte ? <a href="login.php" class="link-primary">Se connecter</a>
+               Déjà un compte ? <a href="login.php<?= $registerRedirect !== '' ? '?redirect=' . urlencode($registerRedirect) : '' ?>" class="link-primary form-link-loader">Se connecter</a>
             </div>
          </form>
       </div>
 
+      <script src="js/jquery-3.7.1.min.js"></script>
+      <script src="js/bootstrap.bundle.min.js"></script>
+      <script src="js/main.js"></script>
    </body>
 </html>

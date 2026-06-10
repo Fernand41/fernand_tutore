@@ -12,6 +12,95 @@ function safeAddEventListener(selector, event, callback) {
     }
 }
 
+// Ajoute un loader sur les formulaires de login et d'inscription
+function initFormSubmissionLoader(formId, btnId, contentId, spinnerId) {
+    var form = document.getElementById(formId);
+    var btn = document.getElementById(btnId);
+    var content = document.getElementById(contentId);
+    var spinner = document.getElementById(spinnerId);
+    if (!form || !btn || !content || !spinner) return;
+
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) return;
+        event.preventDefault();
+        btn.disabled = true;
+        content.style.display = 'none';
+        spinner.style.display = 'inline-flex';
+        setTimeout(function() {
+            form.submit();
+        }, 300);
+    });
+}
+
+// Confirmation + animation avant la déconnexion
+function initLogoutWithLoader() {
+    document.querySelectorAll('a[href*="auth_logout.php"]').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            var confirmed = window.confirm('Voulez-vous vraiment vous déconnecter ?');
+            if (!confirmed) {
+                event.preventDefault();
+                return;
+            }
+            if (link.dataset.loading === 'true') {
+                event.preventDefault();
+                return;
+            }
+            event.preventDefault();
+            link.dataset.loading = 'true';
+            link.classList.add('disabled');
+            link.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Déconnexion...';
+            setTimeout(function() {
+                window.location.href = link.href;
+            }, 300);
+        });
+    });
+}
+
+// Loader pour les boutons de navigation de connexion/profil
+function initNavLinkLoader() {
+    document.querySelectorAll('a.nav-link.nav-cta').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            if (link.dataset.loading === 'true') {
+                event.preventDefault();
+                return;
+            }
+            event.preventDefault();
+            link.dataset.loading = 'true';
+            link.classList.add('disabled');
+            link.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Chargement...';
+            setTimeout(function() {
+                window.location.href = link.href;
+            }, 300);
+        });
+    });
+}
+
+// Loader pour les liens textuels de formulaire (Créer un compte / Se connecter)
+function initFormTextLinkLoader() {
+    document.querySelectorAll('a.form-link-loader').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            if (link.dataset.loading === 'true') {
+                event.preventDefault();
+                return;
+            }
+            event.preventDefault();
+            link.dataset.loading = 'true';
+            link.classList.add('disabled');
+            var label = link.textContent.trim() || 'Chargement';
+            link.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' + label + '...';
+            setTimeout(function() {
+                window.location.href = link.href;
+            }, 300);
+        });
+    });
+}
+
+initFormSubmissionLoader('loginForm', 'loginBtn', 'loginBtnContent', 'loginSpinner');
+initFormSubmissionLoader('registerForm', 'registerBtn', 'registerBtnContent', 'registerSpinner');
+initLogoutWithLoader();
+initNavLinkLoader();
+initFormTextLinkLoader();
+
 /* NAVBAR SCROLL & ACTIVE LINK  */
 window.addEventListener('scroll', function() {
     var navEl = document.getElementById('nav');

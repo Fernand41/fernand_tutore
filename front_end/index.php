@@ -400,12 +400,7 @@ $latestRecipes = $pdo->query(
                   <?php endforeach; ?>
                </div>
 
-               <!-- Bouton "Voir toutes les recettes" -->
-               <div class="text-center mt-5" data-aos="fade-up">
-                  <a href="recettes.php" class="btn-red">
-                     <i class="fas fa-book-open"></i> Voir toutes les recettes
-                  </a>
-               </div>
+              
 
             <?php else: ?>
                <div class="text-center py-5">

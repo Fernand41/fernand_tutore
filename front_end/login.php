@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/session.php';
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>GoûtsBénin - Connexion Administration</title>
+      <?php $loginRedirect = trim($_GET['redirect'] ?? ''); ?>
       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
       <link href="css/bootstrap.min.css" rel="stylesheet"/>
       <link rel="stylesheet" href="css/all.min.css"/>
@@ -138,6 +139,7 @@ require_once __DIR__ . '/../includes/session.php';
          }
       </style>
    </head>
+   
    <body>
       <a href="index.php" class="back-home-btn">
          <i class="fas fa-arrow-left"></i>
@@ -157,6 +159,9 @@ require_once __DIR__ . '/../includes/session.php';
 
          <form id="loginForm" action="../actions/auth_login.php" method="POST" novalidate>
             <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+            <?php if ($loginRedirect !== ''): ?>
+               <input type="hidden" name="redirect" value="<?= e($loginRedirect) ?>">
+            <?php endif; ?>
             <div class="mb-3">
                <label class="flbl">Adresse email *</label>
                <input type="email" id="loginEmail" name="email" class="form-control fctrl" placeholder="exemple@domaine.bj" required />
@@ -168,16 +173,27 @@ require_once __DIR__ . '/../includes/session.php';
                <input type="password" id="loginPassword" name="mot_de_passe" class="form-control fctrl" placeholder="••••••••" required />
                <div class="invalid-feedback">Veuillez entrer votre mot de passe.</div>
             </div>
-            
-            <button type="submit" class="btn-red mb-3 d-flex align-items-center gap-2">
-               <i class="fas fa-sign-in-alt"></i> Se connecter
-            </button>
-            
-            <div class="text-center text-white-50" style="font-size: 0.85rem;">
-               Pas encore de compte ? <a href="inscription.php" class="link-primary">Créer un compte</a>
+            <div class="mb-3 d-flex align-items-center justify-content-between">
+               <label class="form-check-label text-white-50">
+                  <input type="checkbox" name="remember" class="form-check-input me-2" value="1"> Rester connecté
+               </label>
+               <a href="inscription.php<?= $loginRedirect !== '' ? '?redirect=' . urlencode($loginRedirect) : '' ?>" class="link-primary">Créer un compte</a>
             </div>
+            
+            <button type="submit" id="loginBtn" class="btn-red mb-3 d-flex align-items-center gap-2">
+   <span id="loginBtnContent">
+      <i class="fas fa-sign-in-alt"></i> Se connecter
+   </span>
+   <span id="loginSpinner" style="display:none;">
+      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+      Connexion en cours...
+   </span>
+</button>
          </form>
       </div>
 
+      <script src="js/jquery-3.7.1.min.js"></script>
+      <script src="js/bootstrap.bundle.min.js"></script>
+      <script src="js/main.js"></script>
    </body>
 </html>

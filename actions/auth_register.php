@@ -22,6 +22,7 @@ $pseudo         = trim($_POST['pseudo']         ?? '');
 $email          = trim($_POST['email']          ?? '');
 $mot_de_passe   = $_POST['mot_de_passe']        ?? '';
 $confirmation   = $_POST['confirmation']        ?? '';
+$redirect       = trim($_POST['redirect']      ?? '');
 
 // ── Validations ───────────────────────────────
 
@@ -54,7 +55,7 @@ if (!empty($erreurs)) {
     // Repasser le pseudo et email pour repré-remplir le formulaire
     $_SESSION['form_pseudo'] = $pseudo;
     $_SESSION['form_email']  = $email;
-    header('Location: ../front_end/inscription.php');
+    header('Location: ../front_end/inscription.php' . ($redirect !== '' ? '?redirect=' . urlencode($redirect) : ''));
     exit;
 }
 
@@ -67,7 +68,7 @@ try {
     if ($stmt->fetch()) {
         setFlash('danger', 'Cette adresse email est déjà utilisée.');
         $_SESSION['form_pseudo'] = $pseudo;
-        header('Location: ../front_end/inscription.php');
+        header('Location: ../front_end/inscription.php' . ($redirect !== '' ? '?redirect=' . urlencode($redirect) : ''));
         exit;
     }
 
@@ -76,14 +77,14 @@ try {
     if ($stmt->fetch()) {
         setFlash('danger', 'Ce pseudo est déjà pris, choisissez-en un autre.');
         $_SESSION['form_email'] = $email;
-        header('Location: ../front_end/inscription.php');
+        header('Location: ../front_end/inscription.php' . ($redirect !== '' ? '?redirect=' . urlencode($redirect) : ''));
         exit;
     }
 
 } catch (PDOException $e) {
     error_log('[auth_register] Erreur BDD vérif : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue. Veuillez réessayer.');
-    header('Location: ../front_end/inscription.php');
+    header('Location: ../front_end/inscription.php' . ($redirect !== '' ? '?redirect=' . urlencode($redirect) : ''));
     exit;
 }
 
@@ -102,7 +103,7 @@ try {
 } catch (PDOException $e) {
     error_log('[auth_register] Erreur insertion : ' . $e->getMessage());
     setFlash('danger', 'Une erreur est survenue lors de la création du compte.');
-    header('Location: ../front_end/inscription.php');
+    header('Location: ../front_end/inscription.php' . ($redirect !== '' ? '?redirect=' . urlencode($redirect) : ''));
     exit;
 }
 
@@ -116,5 +117,14 @@ $newUser = [
 loginUser($newUser);
 
 setFlash('success', 'Compte créé avec succès ! Bienvenue, ' . e($pseudo) . ' 🎉');
+if ($redirect !== '') {
+    if (!preg_match('#^(?:[a-z][a-z0-9+.-]*:|//)#i', $redirect)) {
+        if (!preg_match('#^(?:/|\.\./)#', $redirect)) {
+            $redirect = '../front_end/' . ltrim($redirect, '/');
+        }
+        header('Location: ' . $redirect);
+        exit;
+    }
+}
 header('Location: ../front_end/profil.php');
 exit;

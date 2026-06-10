@@ -377,3 +377,99 @@ A déguster avec un délicieux foutou banane !
     [SESSION_csrf] => 547187e73bc42360d7b741729083e404ef9bed18da75bf908b733daffd249ce7
 )
 Insertion OK: titre=Sauce Graine id_categorie=5
+--- 2026-06-10T05:33:21+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => be88571c26331612da9217fabd8b70638e4b453ead8f39957b830173f3350a8d
+            [return_to] => ../front_end/profil.php
+            [titre] => Alloco, banane plantain frites
+            [id_categorie] => 2
+            [description] => L'alloco est un plat traditionnel ivoirien très populaire en Afrique de l'Ouest, composé de morceaux de banane plantain mûre frits dans de l'huile. À la fois tendre et caramélisé, il se sert généralement en accompagnement ou en en-cas avec une sauce à la tomate et du piment.
+            [difficulte] => facile
+            [temps_prep] => 10
+            [temps_cuisson] => 20
+            [portion] => 6
+            [ingredients] => De belles bananes plantains
+
+De l’huile de friture
+
+Du sel
+            [etapes] => Lavez et épluchez vos bananes plantain. Coupez-les : En rondelles, en demi-lune, en lamelles etc.
+
+Ensuite, moi je sale les bananes avant la cuisson. Je trouve que le goût est plus prononcé.
+
+Faites chauffer un bain de friture et plongez-y les bananes coupées.
+
+Faites dorer la banane jusqu’à l’obtention de la coloration qui vous plait. Certains aiment légèrement doré, d’autres, comme moi, aiment l’alloco presque noir lol !
+
+Une fois cuit, déposez votre alloco sur du papier absorbant pour enlever l’excédent d’huile.
+
+Servez tout de suite !
+
+
+            [video_youtube] => https://www.youtube.com/watch?v=i6XTAMb_u-E
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => aloko.jpeg
+                    [error] => 0
+                    [size] => 97853
+                )
+
+        )
+
+    [SESSION_user_id] => 28
+    [SESSION_csrf] => be88571c26331612da9217fabd8b70638e4b453ead8f39957b830173f3350a8d
+)
+Insertion OK: titre=Alloco, banane plantain frites id_categorie=2
+--- 2026-06-10T05:44:55+02:00 ---
+Array
+(
+    [POST] => Array
+        (
+            [csrf_token] => be88571c26331612da9217fabd8b70638e4b453ead8f39957b830173f3350a8d
+            [return_to] => ../front_end/profil.php
+            [titre] => Abaara
+            [id_categorie] => 1
+            [description] =>  Il s'agit d'une pâte de haricots cornille (niébé) parfumée aux épices, agrémentée de crevettes séchées et d'huile de palme (dendê), le tout cuit à la vapeur dans une feuille de bananier.
+            [difficulte] => difficile
+            [temps_prep] => 60
+            [temps_cuisson] => 50
+            [portion] => 5
+            [ingredients] => 500 g de haricots cornille (niébé)
+150 g de crevettes séchées décortiquées (préalablement dessalées dans l'eau chaude)
+1 gros oignon émincé1 morceau de gingembre frais râpé (environ 3 cm)
+50 ml d'huile de palme (huile de dendê)
+50 ml de lait de coco (optionnel, pour l'onctuosité)
+50 g de poudre d'arachide ou de noix de cajouSel et piment (selon votre goût)
+Feuilles de bananier ou papier aluminium (pour l'emballage)
+            [etapes] => Trempage et épluchage : Laissez tremper les haricots dans de l'eau froide pendant au moins 12 heures. Frottez-les entre vos mains pour détacher la fine peau, puis rincez abondamment pour retirer toutes les peaux.
+Mixage : Mixez les haricots dans un robot ou un mixeur avec très peu d'eau jusqu'à obtenir une pâte lisse et homogène.
+Assaisonnement : Dans le bol mixeur, préparez la garniture en mixant l'oignon, le gingembre, les crevettes, la poudre d'arachide et le lait de coco. Incorporez ce mélange à la pâte de haricots.
+Ajout de l'huile : Ajoutez l'huile de palme, le sel et le piment. Mélangez délicatement avec une cuillère en bois jusqu'à ce que la pâte prenne une belle couleur orangée.
+Préparation des feuilles : Si vous utilisez des feuilles de bananier, passez-les rapidement au-dessus de la flamme de votre gazinière. Cela les rendra souples et évitera qu'elles ne se déchirent.
+Emballage : Formez un petit cône avec une feuille de bananier, déposez environ 2 à 3 cuillères à soupe de pâte au centre, et repliez la feuille pour former un paquet bien hermétique (comme un petit chausson).
+Cuisson à la vapeur : Disposez vos paquets dans un couscoussier ou une marmite avec un panier vapeur. Couvrez et laissez cuire à la vapeur pendant environ 30 à 40 minutes. La cuisson est réussie lorsque la pâte est ferme au toucher (vous pouvez vérifier en y insérant la lame d'un couteau qui doit ressortir propre).
+            [video_youtube] => https://www.youtube.com/watch?v=zT1D2dW3WMw
+        )
+
+    [FILES] => Array
+        (
+            [image] => Array
+                (
+                    [name] => abara.jpeg
+                    [error] => 0
+                    [size] => 225167
+                )
+
+        )
+
+    [SESSION_user_id] => 28
+    [SESSION_csrf] => be88571c26331612da9217fabd8b70638e4b453ead8f39957b830173f3350a8d
+)
+Insertion OK: titre=Abaara id_categorie=1

@@ -19,6 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$idRecette = isset($_POST['id_recette']) ? (int) $_POST['id_recette'] : 0;
+if (!isLoggedIn() && $idRecette > 0) {
+    $_SESSION['redirect_after_login'] = '../front_end/recette.php?id=' . $idRecette;
+}
+
 requireAuth('../front_end/login.php');
 verifyCsrf('../front_end/recettes.php');
 

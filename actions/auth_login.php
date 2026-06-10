@@ -98,12 +98,17 @@ if ($remember) {
 setFlash('success', 'Bienvenue, ' . e($user['pseudo']) . ' !');
 
 // Rediriger vers la page demandée avant le login, ou le profil par défaut
-$redirect = $_SESSION['redirect_after_login'] ?? '../front_end/profil.php';
+$redirect = $_SESSION['redirect_after_login'] ?? trim($_POST['redirect'] ?? '');
 unset($_SESSION['redirect_after_login']);
-
-// Sécurité : ne jamais rediriger vers une URL externe
-if (!str_starts_with($redirect, '/') && !str_starts_with($redirect, '../')) {
+if ($redirect === '') {
     $redirect = '../front_end/profil.php';
+}
+
+// Ne jamais rediriger vers une URL externe
+if (preg_match('#^(?:[a-z][a-z0-9+.-]*:|//)#i', $redirect)) {
+    $redirect = '../front_end/profil.php';
+} elseif (!preg_match('#^(?:/|\.\./)#', $redirect)) {
+    $redirect = '../front_end/' . ltrim($redirect, '/');
 }
 
 // Si admin → tableau de bord

@@ -5,13 +5,7 @@
  */
 
 require_once '../config/database.php';
-
-$adminPageTitle  = 'Favoris & Notes | Goûts du Bénin';
-$adminActivePage = 'favoris';
-$breadcrumb      = [['label' => 'Favoris & Notes', 'url' => 'favoris.php']];
-$adminAssets     = '../back_end';
-
-require_once '../includes/admin_header.php';
+require_once '../includes/session.php';
 
 $pdo = Database::getInstance();
 
@@ -78,7 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$tab      = in_array($_GET['tab'] ?? 'favoris', ['favoris', 'notes'], true) ? $_GET['tab'] : 'favoris';
+$adminPageTitle  = 'Favoris & Notes | Goûts du Bénin';
+$adminActivePage = 'favoris';
+$breadcrumb      = [['label' => 'Favoris & Notes', 'url' => 'favoris.php']];
+$adminAssets     = '../back_end';
+
+require_once '../includes/admin_header.php';
+
+$tabValue  = $_GET['tab'] ?? 'favoris';
+$tab       = in_array($tabValue, ['favoris', 'notes'], true) ? $tabValue : 'favoris';
 $recherche = trim($_GET['q'] ?? '');
 $page      = max(1, (int) ($_GET['page'] ?? 1));
 $parPage   = 20;
